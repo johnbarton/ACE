@@ -14,7 +14,7 @@ Given a set of correlation data or sequence input in [FASTA](http://en.wikipedia
 
 Download and unzip the package, then run the following commands in the terminal from the new directory:
 
-```r
+```
 $ ./configure
 $ make
 $ make install
