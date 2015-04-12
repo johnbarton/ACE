@@ -106,7 +106,6 @@ This creates two additional output files, `examples/p6-out-learn.fit` and `examp
 Output from the first file, `examples/p6-out-learn.fit`, should appear something like the following:
 
 >1 &nbsp;&nbsp; 5.776764e+02 &nbsp;&nbsp; 8.605859e+02 &nbsp;&nbsp; 4.342585e+06 &nbsp;&nbsp; 1.900000e+00
-
 >2 &nbsp;&nbsp; 5.768460e+02 &nbsp;&nbsp; 8.592596e+02 &nbsp;&nbsp; 4.330094e+06 &nbsp;&nbsp; 3.610000e+00
 >3 &nbsp;&nbsp; 5.773766e+02 &nbsp;&nbsp; 8.598271e+02 &nbsp;&nbsp; 4.338444e+06 &nbsp;&nbsp; 6.859000e+00
 >4 &nbsp;&nbsp; 5.772833e+02 &nbsp;&nbsp; 8.593048e+02 &nbsp;&nbsp; 4.337158e+06 &nbsp;&nbsp; 1.303210e+01
