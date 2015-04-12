@@ -8,11 +8,6 @@
 
 ACE is a software package designed to quickly and accurately infer [Ising](https://en.wikipedia.org/wiki/Ising_model) or [Potts](https://en.wikipedia.org/wiki/Potts_model) models based on correlation data from a variety of biological and artificial systems. This software makes use of the <b>A</b>daptive <b>C</b>luster <b>E</b>xpansion (ACE) algorithm.
 
-<p align="center">
-  <img src="" title="mouseover title" />
-</p>
-
-
 Given a set of correlation data or sequence input in [FASTA](http://en.wikipedia.org/wiki/FASTA_format) format, ACE will produce a Ising or Potts model that reproduces the input correlations to within the expected error due to finite sampling.
 
 
@@ -47,7 +42,7 @@ p_{ij}(a,b) &= \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\delta(x_j,b)\,.
 \end{aligned}
 $$
 
-Here $\delta$ represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension ".p", in the following format:
+Here $\delta$ represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension `.p`, in the following format:
 
 > $p_1(1)$ $p_1(2)$ ... $p_1(q_1-1)$ 
 > $p_2(1)$ $p_2(2)$ ... $p_2(q_2-1)$
