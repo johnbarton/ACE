@@ -1,0 +1,29 @@
+Copyright for this implementation:
+2015 - John Barton, Eleonora de Leonardis, R. Monasson, Simona Cocco
+jpbarton@gmail.com,eleonora.deleonardis@gmail.com,monasson@lpt.ens.fr, cocco@lps.ens.fr
+
+Permission is granted for anyone to copy, use, or modify this
+software and accompanying documents for any uncommercial
+purposes, provided this copyright notice is retained, and note is % made
+of any changes that have been made. This software and
+documents are distributed without any warranty, express or
+implied. All use is entirely at the user's own risk.
+
+Any publication resulting from applications of ACE should cite:
+
+     J Barton, E de Leonardis, R Monasson, and S Cocco (2015)
+     ACE: inference of graphical models describing functional constraints
+     on protein sequences and neural activity patterns
+     and  
+     S Cocco, R Monasson. Adaptive Cluster Expansion for Inferring
+     Boltzmann Machines with Noisy Data. Physical Review Letters 106, 090601
+     (2011)
+
+This is an implementation of the adaptive cluster expansion algorithm (ACE).
+To build the program, just type at the command line:
+
+./configure
+make
+
+This produces an executable file "sce" which runs the program.
+
