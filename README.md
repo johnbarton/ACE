@@ -44,7 +44,7 @@ $$
 
 Here $\delta$ represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension `.p`, in the following format:
 
-> $p_1(1)$ $p_1(2)$ ... $p_1(q_1-1)$ 
+> $p_1(1)$ $p_1(2)$ ... $p_1(q_1-1)$
 > $p_2(1)$ $p_2(2)$ ... $p_2(q_2-1)$
 > ...
 > $p_N(1)$ $p_N(2)$ ... $p_N(q_N-1)$
