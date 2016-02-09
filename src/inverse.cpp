@@ -973,6 +973,7 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
     
     if (eps>EPSG) descentStep = useDescent(grad);
     
+    int count = 0;
     while (eps>EPSG) {
         
         if (descentStep) computeDescentStep(grad, length, step);
@@ -996,10 +997,15 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
         if (!descentStep && eps>EPSG) { optimizeS(J, expJ, S, grad, hess, p); (*regularizeS_ptr)(J, S, grad, hess, p, gamma); }
         
         // Update entropy list for relaxed step length choice
+        // Switch out of relaxed step choice if optimization takes a long time
         
-        lastS.insert(lastS.begin(),S);
-        lastS.pop_back();
-        armijoS=LInfinity(lastS);
+        if (count>1000) armijoS = S;
+        else {
+            lastS.insert(lastS.begin(),S);
+            lastS.pop_back();
+            armijoS=LInfinity(lastS);
+        }
+        count++;
         
     }
     
