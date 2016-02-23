@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
         if      (strcmp(argv[i],"-d")==0)       { if (++i==argc) break; else r.directory=argv[i];               }
         else if (strcmp(argv[i],"-i")==0)       { if (++i==argc) break; else r.infile=argv[i];                  }
         else if (strcmp(argv[i],"-o")==0)       { if (++i==argc) break; else r.outfile=argv[i];                 }
-        else if (strcmp(argv[i],"-cmap")==0)    { if (++i==argc) break; else { r.useCmap=true;
+        else if (strcmp(argv[i],"-ss")==0)      { if (++i==argc) break; else { r.useCmap=true;
                                                                                r.ssinfile=argv[i];            } }
         else if (strcmp(argv[i],"-inputcl")==0) { if (++i==argc) break; else { r.inputClusters=true;
                                                                                r.ssinfile=argv[i];            } }
