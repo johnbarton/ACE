@@ -91,7 +91,7 @@ public:
     bool useSparse;         // If true, use sparse L0-norm regularization, in addition to the default L2
     bool useCmap;           // If true, the inference is performed around the give contact map
     bool inputClusters;     // If true, select clusters from a given list and perform inference
-    bool recClusters;       // If true, save the list of cluster selected at convergence in a .wuss file
+    bool recClusters;       // If true, save the list of cluster selected at convergence
     bool useVerbose;        // If true, print extra information while program is running
     bool useVeryVerbose;    // If true, use very verbose output
 

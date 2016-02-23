@@ -260,9 +260,7 @@ void makeCluster(Cluster &cluster, const Key &key, int clusterSize) {
     
     (*computeSandJ_ptr)(p,clusterSize,gamma2,gamma0,J,S);
     for (int i=0;i<cluster.dJ.size();i++) { for (int j=0;j<cluster.dJ[i].size();j++) cluster.dJ[i][j]=(J[i][j]-dJ[i][j]); }
-    //DEBUG
     cluster.dS=S-dS;
-    //cluster.dS=S;
 
 }
 
@@ -699,7 +697,7 @@ void run(RunParameters &r) {
 
     if (r.useCmap || r.inputClusters) {
 
-        if (r.useVerbose) printf("Selecting clusters from a given list.\n");
+        if (r.useVerbose) printf("Selecting clusters from the input list\n");
 
         FILE *ssin=fopen(r.getSecStructInfile().c_str(),"r");
         IntVector ss;
@@ -725,13 +723,6 @@ void run(RunParameters &r) {
                 makeCluster(c,clusterKey,(int)ss[i].size());
                 c.selected=true;
                 (*clusterIndex)[clusterKey]=c;
-                
-                if (r.useVerbose && ss[i].size()>maxsize) {
-
-                    printf("Computing all clusters of size %lu...\n",ss[i].size());
-                    maxsize=ss[i].size();
-
-                }
 
             }
             

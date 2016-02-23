@@ -129,15 +129,19 @@ int main(int argc, char *argv[]) {
                 
         // Monte Carlo settings
         
-        else if (strcmp(argv[i],"-b")==0)     { if (++i==argc) break; else r.sampleB=strtodouble(argv[i]);                  }
-        else if (strcmp(argv[i],"-mcb")==0)   { if (++i==argc) break; else r.b=strtoint(argv[i]);                           }
-        else if (strcmp(argv[i],"-mcr")==0)   { if (++i==argc) break; else r.runs=strtoint(argv[i]);                        }
-        else if (strcmp(argv[i],"-p3")==0)    { r.p3=true;                                                                  }
-        else if (strcmp(argv[i],"-p3red")==0) { r.p3red=true;                                                               }
+        else if (strcmp(argv[i],"-b")==0)      { if (++i==argc) break; else r.sampleB=strtodouble(argv[i]);                 }
+        else if (strcmp(argv[i],"-mcb")==0)    { if (++i==argc) break; else r.b=strtoint(argv[i]);                          }
+        else if (strcmp(argv[i],"-mcr")==0)    { if (++i==argc) break; else r.runs=strtoint(argv[i]);                       }
+        else if (strcmp(argv[i],"-p3")==0)     { r.computeP3=true;                                                          }
         
         // Optional output
         
-        else if (strcmp(argv[i],"-v")==0)   { r.useVerbose=true;                                                            }
+        else if (strcmp(argv[i],"-p2full")==0)  { r.computeP2=true;                                                         }
+        else if (strcmp(argv[i],"-p3full")==0)  { r.computeP3=true; r.pthresh=0;                                            }
+        else if (strcmp(argv[i],"-pthresh")==0) { if (++i==argc) break; else r.pthresh=strtodouble(argv[i]);                }
+        else if (strcmp(argv[i],"-nmax")==0)    { if (++i==argc) break; else { r.useNMax=true; r.nmax=strtodouble(argv[i]); } }
+        else if (strcmp(argv[i],"-msaout")==0)  { r.recMSA=true;                                                            }
+        else if (strcmp(argv[i],"-v")==0)       { r.useVerbose=true;                                                        }
         
         else printf("Unrecognized command! '%s'\n",argv[i]);
         

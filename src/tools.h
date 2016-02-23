@@ -50,6 +50,9 @@ void quickSort(std::vector<int> &, int, int);
 bool checkSize(const Key &, const Key &);
 void getSuperset(const Key &, const Key &, Key &);
 
+void expandCorrelations(const Vector &, Vector &);
+void expandCorrelations3(Vector &, Vector &);
+
 void unpack(Vector &, std::vector<double> &, const Vector &);
 void pack(Vector &, std::vector<double> &, const Vector &);
 void unpack_sparse(Vector &, std::vector<double> &, const Vector &, const IntVector &);
@@ -203,14 +206,14 @@ inline int index(int i, int j, size_t length) {
 }
 
 
-// For k>j>i, return the index of {i,j,k} in the full list
+// For k>j>i, return the index of {i,j,k} in the list {{0,1,2},{0,1,3},...,{0,1,length-1},...}
 
 inline int index(int i, int j, int k, int length) {
     
     return ( ( (i * (i + 1) * ( i + 2 )) / 3 
                   - (length-1) * (i * (i + 2) - 2 * j + 1) 
                   + ((int) pow(length-1, 2)) * (i - 1)
-                  - (j * (j + 1) - 2 * k)                ) / 2 );
+                  - (j * (j + 1) - 2 * k)                ) / 2 + (length * (length-3) / 2) );
     
 }
 

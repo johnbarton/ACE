@@ -187,7 +187,7 @@ void printSupplementaryOutput(FILE *output, double theta, const std::vector<doub
 
 // Read alignment and compute correlations with 3-points
 
-void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector<std::vector<std::vector<std::vector<double> > > > &p3, std::vector<double> &pk, std::vector<int> &cons) {
+void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, Vector &p3, std::vector<double> &pk, std::vector<int> &cons, std::string energyout) {
   
     int c = 0;
     int B = 0;
@@ -197,8 +197,10 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
     std::vector<int> indexi;
     std::vector<int> indexa;
     std::vector<double> weight;
-
+    
     while (fscanf(input,"%d",&c)==1) { aa.push_back(c); if (c>B) B=c; }
+    
+    std::vector<double> energy(B,0);
     
     // Get sequence weights from file 
     
@@ -237,6 +239,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
         else {
       
             p[indexi[cont]][indexa[cont]] += weight[aa[i]-1]/Meff;
+            energy[aa[i]-1] -= J[indexi[cont]][indexa[cont]];
             seq[aa[i]-1].push_back(cont);
             mut[aa[i]-1] -= (int) (indexa[cont]==cons[indexi[cont]]);
         
@@ -244,7 +247,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
         
     }
     
-    // check for colors outside the alignement
+    // check for colors outside the alignment
   
     for (int i=0;i<mut.size();i++) { for (int site=0;site<N;site++){
     
@@ -271,24 +274,27 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
             int sab = sindex(ax,bx,p[ix].size(),p[jx].size());
 	      
             p[idx][sab] += weight[i]/Meff;
+            energy[i]   -= J[idx][sab];
 	      
             for (int l=k+1;l<seq[i].size();l++) {
           
                 int kx = indexi[seq[i][l]];
                 int cx = indexa[seq[i][l]];
                 
-                p3[ix][jx][kx][sindex3(ax,bx,cx,p[ix].size(),p[jx].size(),p[kx].size())] += weight[i]/Meff;
+                p3[index(ix,jx,kx,N)][sindex3(ax,bx,cx,p[ix].size(),p[jx].size(),p[kx].size())] += weight[i]/Meff;
 	  
             }
         
-        }
-      
-    }
+        } }
     
-    pk[mut[i]] += weight[i]/Meff;
+        pk[mut[i]] += weight[i]/Meff;
     
     }
 
+    FILE *pFile2 = fopen(energyout.c_str(),"w");
+    for (int i=0;i<B;i++) fprintf(pFile2,"%.6e\n",energy[i]);
+    fclose(pFile2);
+    
 }
 
 
@@ -296,7 +302,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
 
 // Read alignment and compute correlations WITHOUT 3-points
 
-void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector<double> &pk, std::vector<int> &cons) {
+void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector<double> &pk, std::vector<int> &cons, std::string energyout) {
   
     int c = 0;
     int B = 0;
@@ -309,10 +315,12 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
 
     while (fscanf(input,"%d",&c)==1) { aa.push_back(c); if (c>B) B=c; }
     
+    std::vector<double> energy(B,0);
+    
     // Get sequence weights from file 
     
     if (weightIn!=NULL) {
-        
+    
         getWeights(weightIn,weight);
         for (int i=0;i<weight.size();i++) Meff += weight[i];
         
@@ -346,6 +354,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
         else {
       
             p[indexi[cont]][indexa[cont]] += weight[aa[i]-1]/Meff;
+            energy[aa[i]-1] -= J[indexi[cont]][indexa[cont]];
             seq[aa[i]-1].push_back(cont);
             mut[aa[i]-1] -= (int) (indexa[cont]==cons[indexi[cont]]);
         
@@ -380,15 +389,18 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
             int sab = sindex(ax,bx,p[ix].size(),p[jx].size());
 	      
             p[idx][sab] += weight[i]/Meff;
-	  
-        }
-      
+            energy[i]   -= J[idx][sab];
+        
+        } }
+    
+        pk[mut[i]] += weight[i]/Meff;
+    
     }
     
-    pk[mut[i]] += weight[i]/Meff;
+    FILE *pFile2=fopen(energyout.c_str(),"w");
+    for (int i=0;i<B;i++) fprintf(pFile2,"%.6e\n",energy[i]);
+    fclose(pFile2);
     
-    }
-
 }
 
 
@@ -414,92 +426,268 @@ void getWeights(FILE *input, std::vector<double> &p) {
 
 }
 
-// Print magnetisations
-
-void printMagnetisations(FILE *output, const Vector &J, const Vector &orJ) {
-    
-    int N = sizetolength(J.size()); 
-    
-    for (int i=0;i<N;i++) { for (int a=0;a<J[i].size();a++) {
-	  
-        if (J[i][a]!=0.0 || orJ[i][a]!=0.0) fprintf(output,"%.6e\t%.6e %d %d\n",J[i][a],orJ[i][a],i,a);
-        
-    } }
-    
-//    for (int i=0;i<N;i++)  for (int j=0;j<J[i].size();j++) fprintf(output,"%.6e\t%.6e\n",J[i][j],orJ[i][j]); 
-
-    fflush(output);
-
-}
-
-
-// Print some correlations
-
-void printCorrelations(FILE *outputc, const Vector &Jc, const Vector &orJc, FILE *output, const Vector &J, const Vector &orJ) {
-  
-    int N    = sizetolength(J.size());
-    int cont = 0;
-    
-      
-    for (int i=N;i<J.size();i++) { for (int j=0;j<J[i].size();j++) {
-	    
-        fprintf(output,"%.6e\t%.6e\n",J[i][j],orJ[i][j]);
-	    fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j],orJc[i][j]); 
-	
-    } }
-      
-    fflush(output);
-	
-}
-
-// Print some 3-point correlations
-
-void print3points(FILE *outputc, const std::vector<std::vector<std::vector<std::vector<double> > > > &Jc, const std::vector<std::vector<std::vector<std::vector<double> > > > &orJc,FILE *output, const std::vector<std::vector<std::vector<std::vector<double> > > > &J, const std::vector<std::vector<std::vector<std::vector<double> > > > &orJ,double num) {
-   
-    int N    = J.size();
-    int cont = 0;
-
-    if (num!=0.0) {
-      
-        printf("Warning: only 3-point correlations bigger than %f will be systematically printed\n", num);
-        
-        for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) { for (int a=0;a<J[i][j][k].size();a++) {
-                
-            if (fabs(J[i][j][k][a])>num  || fabs(orJ[i][j][k][a])>num) {
-          
-                fprintf(output,"%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a]);
-                fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a]);
-            
-            }
-            else {
-                
-                if (cont % 50 == 0) {
-            
-                    fprintf(output,"%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a]);
-                    fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a]);
-            
-                }
-                
-                cont++;
-            
-            }
-            
-        } } } }
-        
-    }
-    else {
-      
-        for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) { for (int l=0;l<J[i][j][k].size();l++) {
-          
-            fprintf(output,"%.6e\t%.6e\n",J[i][j][k][l],orJ[i][j][k][l]);
-            fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][l],orJc[i][j][k][l]);
-          
-        } } } }
-   
-    }
-
-    fflush(output);
-
-}
+//// Print magnetisations
+//
+//void printMagnetisations(FILE *output, const Vector &J, const Vector &orJ) {
+//    
+//    int N = sizetolength(J.size()); 
+//    
+//    for (int i=0;i<N;i++) { for (int a=0;a<J[i].size();a++) {
+//	  
+//        if (J[i][a]!=0.0 || orJ[i][a]!=0.0) fprintf(output,"%.6e\t%.6e %d %d\n",J[i][a],orJ[i][a],i,a);
+//        
+//    } }
+//    
+////    for (int i=0;i<N;i++)  for (int j=0;j<J[i].size();j++) fprintf(output,"%.6e\t%.6e\n",J[i][j],orJ[i][j]); 
+//
+//    fflush(output);
+//
+//}
+//
+//
+//// Print some correlations
+//
+//void printCorrelations(FILE *outputc, const Vector &Jc, const Vector &orJc, FILE *output, const Vector &J, const Vector &orJ, double num) {
+//  
+//    int N     = sizetolength(J.size());
+//    int cont  = 0;
+//    int cont2 = 0;
+//
+//    if (num!=0.0) {
+//
+//        printf("Warning: only 2-point correlations bigger than %f will be systematically printed\n", num);
+//
+//        for (int i=N;i<J.size();i++) { for (int j=0;j<J[i].size();j++) {
+//
+//            if (fabs(J[i][j])>num || fabs(orJ[i][j]>num) ) {
+//
+//                fprintf(output,"%.6e\t%.6e\n",J[i][j],orJ[i][j]);
+//                fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j],orJc[i][j]);
+//
+//            }
+//
+//            else if (cont2<10000) {
+//                
+//                if (cont%50==0) {
+//
+//                    fprintf(output,"%.6e\t%.6e\n",J[i][j],orJ[i][j]);
+//                    fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j],orJc[i][j]);
+//
+//                    cont2++;
+//                    
+//                }
+//                
+//                cont++;
+//                    
+//            }
+//                
+//        } }
+//    
+//    }
+//    
+//    else {
+//        
+//        for (int i=N;i<J.size();i++) { for (int j=0;j<J[i].size();j++) {
+//	    
+//            fprintf(output,"%.6e\t%.6e\n",J[i][j],orJ[i][j]);
+//	        fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j],orJc[i][j]); 
+//	
+//        } }
+//
+//    }
+//    
+//    fflush(output);
+//    fflush(outputc);
+//	
+//}
+//
+//
+//// Print some correlations errors
+//
+//void printCorrelationsError(FILE *outputc, const Vector &Jc, const Vector &orJc, const Vector &Ec, FILE *output, const Vector &J, const Vector &orJ, const Vector &Ep, double num) {
+//  
+//    int N     = sizetolength(J.size());
+//    int cont  = 0;
+//    int cont2 = 0;
+//
+//    if (num!=0.0) {
+//
+//        printf("Warning: only 2-point correlations bigger than %f will be systematically printed\n", num);
+//
+//        for (int i=N;i<J.size();i++) { for (int j=0;j<J[i].size();j++) {
+//
+//            if (fabs(J[i][j])>num || fabs(orJ[i][j]>num)) {
+//
+//                fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j],orJ[i][j],Ep[i][j]);
+//                fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j],orJc[i][j],Ec[i][j]); 
+//
+//            }
+//
+//            else if (cont2<10000) {
+//                
+//                if (cont%50==0) {
+//
+//                    fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j],orJ[i][j],Ep[i][j]);
+//                    fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j],orJc[i][j],Ec[i][j]);
+//                    cont2++;
+//                
+//                }
+//                
+//                cont++;
+//                    
+//            }
+//                
+//        } }
+//        
+//    }
+//
+//    else {
+//        
+//        for (int i=N;i<J.size();i++) { for (int j=0;j<J[i].size();j++) {
+//        
+//            fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j],orJ[i][j],Ep[i][j]);
+//            fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j],orJc[i][j],Ec[i][j]); 
+//    
+//        } }
+//
+//    }
+//      
+//    fflush(output);
+//    fflush(outputc);
+//	
+//}
+//
+//// Print some 3-point correlations
+//
+//void print3points(FILE *outputc, const std::vector<std::vector<std::vector<std::vector<double> > > > &Jc, const std::vector<std::vector<std::vector<std::vector<double> > > > &orJc,FILE *output, const std::vector<std::vector<std::vector<std::vector<double> > > > &J, const std::vector<std::vector<std::vector<std::vector<double> > > > &orJ,double num) {
+//   
+//    int N     = J.size();
+//    int cont  = 0;
+//	int cont2 = 0;
+//	int cont3 = 0;
+//	
+//    if (num!=0.0) {
+//      
+//        printf("Warning: only 3-point correlations bigger than %f will be systematically printed\n", num);
+//        
+//        for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) { for (int a=0;a<J[i][j][k].size();a++) {
+//                
+//            if (fabs(J[i][j][k][a])>10*num || fabs(orJ[i][j][k][a])>10*num) {
+//          
+//                fprintf(output,"%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a]);
+//                fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a]);
+//            
+//            }
+//			
+//			else if ( (fabs(J[i][j][k][a])>num || fabs(orJ[i][j][k][a])>num) && cont3<1000) {
+//				
+//                fprintf(output,"%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a]);
+//                fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a]);
+//                cont3++;
+//            
+//            }
+//			
+//            else if (cont2<1000) {
+//            
+//                if (cont % 50 == 0) {
+//                    
+//                    fprintf(output,"%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a]);
+//                    fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a]);
+//                    cont2++;
+//                
+//                }
+//                
+//                cont++;
+//					
+//            }
+//				
+//        } } } }
+//        
+//    }
+//    
+//    else {
+//
+//        printf("Printing 3-point correlations...\n", num);
+//          
+//        for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) { for (int l=0;l<J[i][j][k].size();l++) {
+//              
+//            fprintf(output,"%.6e\t%.6e\n",J[i][j][k][l],orJ[i][j][k][l]);
+//            fprintf(outputc,"%.6e\t%.6e\n",Jc[i][j][k][l],orJc[i][j][k][l]);
+//              
+//        } } } }
+//   
+//    }
+//
+//    fflush(output);
+//    fflush(outputc);
+//
+//}
+//
+//
+//// Print some 3-point correlations error
+//
+//void print3pointserror(FILE *outputc, const std::vector<std::vector<std::vector<std::vector<double> > > > &Jc, const std::vector<std::vector<std::vector<std::vector<double> > > > &orJc, const std::vector<std::vector<std::vector<std::vector<double> > > > &Ec, FILE *output, const std::vector<std::vector<std::vector<std::vector<double> > > > &J, const std::vector<std::vector<std::vector<std::vector<double> > > > &orJ, const std::vector<std::vector<std::vector<std::vector<double> > > > &Ep, double num) {
+//   
+//    int N    = J.size();
+//    int cont = 0;
+//    int cont2=0;
+//    int cont3=0;
+//    
+//    if (num!=0.0) {
+//      
+//        printf("Warning: only 3-point correlations bigger than %f will be systematically printed\n", num);
+//        
+//        for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) { for (int a=0;a<J[i][j][k].size();a++) {
+//                
+//            if (fabs(J[i][j][k][a])>10*num || fabs(orJ[i][j][k][a])>10*num) {
+//          
+//                fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a],Ep[i][j][k][a]);
+//                fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a],Ec[i][j][k][a]);
+//            
+//            }
+//            
+//            else if ((fabs(J[i][j][k][a])>num || fabs(orJ[i][j][k][a])>num) && cont3<1000) {
+//                
+//                fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a],Ep[i][j][k][a]);
+//                fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a],Ec[i][j][k][a]);
+//                cont3++;
+//                
+//            }
+//            
+//            else if (cont2<1000) {
+//                
+//                if (cont%50==0) {
+//                    
+//                    fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j][k][a],orJ[i][j][k][a],Ep[i][j][k][a]);
+//                    fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j][k][a],orJc[i][j][k][a],Ec[i][j][k][a]);
+//                    cont2++;
+//                
+//                }
+//                
+//                cont++;
+//                    
+//            }
+//                
+//        } } } }
+//        
+//    }
+//    
+//    else {
+//
+//        printf("Printing 3-point correlations...\n", num);
+//      
+//        for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) { for (int l=0;l<J[i][j][k].size();l++) {
+//          
+//            fprintf(output,"%.6e\t%.6e\t%.6e\n",J[i][j][k][l],orJ[i][j][k][l],Ep[i][j][k][l]);
+//            fprintf(outputc,"%.6e\t%.6e\t%.6e\n",Jc[i][j][k][l],orJc[i][j][k][l],Ec[i][j][k][l]);
+//          
+//        } } } }
+//   
+//    }
+//
+//    fflush(output);
+//    fflush(outputc);
+//
+//}
 
 

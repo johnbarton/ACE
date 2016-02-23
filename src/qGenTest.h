@@ -26,19 +26,19 @@ public:
     double runs;            // Number of times to run dynamics
     
     double sampleB;         // Number of data points in the sample
-    bool p3;                // compute 3-point correlations
-    bool p3red;             // compute 3-point correlations and only some small 3-point correlations will be printed
     double gamma;           // Regularization strength
+    double nmax;            // (Approximate) maximum number of 3-point correlations to record
+    double pthresh;         // Record 3-point correlations larger than this size in absolute value
     bool useGamma;          // If true, use L2 regularization (with strength computed using sampleB and correlations)
     bool useGI;             // If true, use gauge invariant regularization for couplings
-    
-    bool useStart;          // Use different starting sequence than all wild-type
-    bool refMC;             // Use reference Monte Carlo
-    std::string startfile;  // File containing the starting sequence
-    bool ThreePoints;       // compute 3 point correlations
-    bool MSAout;            // printf MonteCarlo alignment and compute energies
-    
+    bool computeP2;         // If true, compute 2-point correlations
+    bool computeP3;         // If true, compute 3-point correlations
+    bool useNMax;           // If true, specify a maximum number of 3-point correlations to write to file
+    bool recMSA;            // If true, print Monte Carlo alignment and compute energies
     bool useVerbose;        // If true, print extra information while program is running
+    bool useStart;          // Use different starting sequence than all wild-type
+    std::string startfile;  // File containing the starting sequence
+    
     
     RunParameters() {
         
@@ -52,15 +52,17 @@ public:
         runs=1;
         
         sampleB=1000;
-        p3=false;
-        p3red=false;
         gamma=0;
+        nmax=0;
+        pthresh=1e-4;
         useGamma=false;
         useGI=false;
-        
-        useStart=false;
-        refMC=false;
+        computeP2=true;
+        computeP3=false;
+        useNMax=false;
+        recMSA=false;
         useVerbose=false;
+        useStart=false;
     
     }
     
@@ -75,10 +77,14 @@ public:
     std::string getPKOutfile()       { return (directory+"/"+outfile+".pk");     }
     std::string getP3Outfile()       { return (directory+"/"+outfile+".p3");     }
     std::string getC3Outfile()       { return (directory+"/"+outfile+".c3");     }
+    std::string MSAOutfile()         { return (directory+"/"+outfile+".mc");     } // msa -> mc
+    std::string EnergiesOutfile()    { return (directory+"/"+outfile+".mce");    } // e -> mce
+    std::string MSAEnOutfile()       { return (directory+"/"+outfile+".msae");   }
     
     ~RunParameters() {}
     
 };
+
 
 void runGenTest(RunParameters &);
 

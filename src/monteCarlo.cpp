@@ -24,6 +24,7 @@ double (*getMaxError_ptr)(const Vector &, const Vector &, double, const Vector &
 
 
 
+
 // Compute epsilonP for two vectors of correlations
 
 double epsilonP(const Vector &q, const Vector &p, int N, double maxPrecision, const Vector &J, double gamma, double alpha) {
@@ -34,6 +35,7 @@ double epsilonP(const Vector &q, const Vector &p, int N, double maxPrecision, co
     for (int i=0;i<N;i++) { for (int a=0;a<q[i].size();a++) {
     
         Neff++;
+        
         double gradError = pow(q[i][a] - p[i][a] - (2 * gamma * alpha * J[i][a]), 2.0);
     
         if (q[i][a]<maxPrecision) err += gradError / (maxPrecision * (1 - maxPrecision));
@@ -60,7 +62,7 @@ double epsilonP2(const Vector &q, const Vector &p, int N, double maxPrecision, c
         for (int a=0;a<J[idx].size();a++) {
         
             NJeff++;
-
+            
             double K         = J[idx][a];
             double gradError = pow(p[idx][a] - q[idx][a] + (2 * gamma * K), 2.0);
     
@@ -228,7 +230,7 @@ double getMaxError(const Vector &q, const Vector &p, const IntVector &nz, double
         if (q[i][j]<maxPrecision) gradError /= (1 - maxPrecision);
         else                      gradError /= (maxPrecision * q[i][j] * (1 - q[i][j]));
             
-        if (gradError>maxError) maxError=gradError;
+        if (gradError>maxError) maxError = gradError;
         
     } }
         
@@ -250,7 +252,7 @@ double getMaxError(const Vector &q, const Vector &p, const IntVector &nz, double
             if (q[idx][a]<maxPrecision) gradError /= (1 - maxPrecision);
             else                        gradError /= (maxPrecision * q[idx][a] * (1 - q[idx][a]));
 
-            if (gradError>maxError) maxError=gradError;
+            if (gradError>maxError) maxError = gradError;
             
         }
             
@@ -298,7 +300,7 @@ double getMaxError(const Vector &q, const Vector &p, double maxPrecision, const 
             if (q[idx][a]<maxPrecision) gradError /= (1 - maxPrecision);
             else                        gradError /= (maxPrecision * q[idx][a] * (1 - q[idx][a]));
 
-            if (gradError>maxError) maxError=gradError;
+            if (gradError>maxError) maxError = gradError;
             
         }
             
@@ -368,7 +370,7 @@ double getMaxError_GI(const Vector &q, const Vector &p, double maxPrecision, con
             if (q[idx][sab]<maxPrecision) gradError /= (1 - maxPrecision);
             else                          gradError /= (maxPrecision * q[idx][sab] * (1 - q[idx][sab]));
 
-            if (gradError>maxError) maxError=gradError;
+            if (gradError>maxError) maxError = gradError;
             
         } }
             
@@ -553,7 +555,7 @@ void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> 
 
 // Update correlations for Generative Tests based on the current lattice configuration with 3-point correlations
 
-void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> &nonzero, Vector &p, std::vector<double> &pk, std::vector<std::vector<std::vector<std::vector<double> > > > &p3, std::vector<int> &cons) {
+void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> &nonzero, Vector &p, std::vector<double> &pk, Vector &p3, std::vector<int> &cons) {
     
     for (int i=0;i<lattice.size();i++) { if (nonzero[i]) {
         
@@ -567,7 +569,7 @@ void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> 
 	    
             for (int k=j+1;k<lattice.size();k++) {  if (nonzero[k]) {
 				    
-                p3[i][j][k][sindex3(lattice[i],lattice[j],lattice[k],p[i].size(),p[j].size(),p[k].size())]+=1;
+                p3[index(i,j,k,lattice.size())][sindex3(lattice[i],lattice[j],lattice[k],p[i].size(),p[j].size(),p[k].size())]+=1;
 
             } }
                 
@@ -636,25 +638,68 @@ void getSample(const Vector &expJ, const IntVector &neighbor, MT::MersenneTwist 
 
 // Get Monte Carlo sample for GenTest with 3-point correlations
 
-void getSampleGenTest(const Vector &expJ, const IntVector &neighbor, MT::MersenneTwist &mt, int N, int numSteps, int stepSize, std::vector<int> &lattice, std::vector<int> &nonzero, Vector &p, Vector &expH, std::vector<double> &sumExpH,  std::vector<double> &pk, std::vector<std::vector<std::vector<std::vector<double> > > > &p3,std::vector<int> &cons) {
+void getSampleGenTest(const Vector &expJ, const IntVector &neighbor, MT::MersenneTwist &mt, int N, int numSteps, int stepSize, std::vector<int> &lattice, std::vector<int> &nonzero, Vector &p, Vector &expH, std::vector<double> &sumExpH, std::vector<double> &pk, Vector &p3, std::vector<int> &cons, const Vector &J, bool recMSA, std::string msaout, std::string energyout) {
 
     for (int n=0;n<numSteps;n++) {
     
         for (int k=0;k<stepSize;k++) dynamicsRF(expJ, neighbor, mt.genrand_int31()%N, mt.genrand_real1(), lattice, nonzero, expH, sumExpH);
         updateCorrelations(lattice, nonzero, p, pk, p3, cons);
+        
+        if (recMSA) getEnergies(J, lattice, nonzero, msaout, energyout);
+    
     }
 
 }
 
+
 // Get Monte Carlo sample for GenTest WITHOUT 3-point correlations
 
-void getSampleGenTest(const Vector &expJ, const IntVector &neighbor, MT::MersenneTwist &mt, int N, int numSteps, int stepSize, std::vector<int> &lattice, std::vector<int> &nonzero, Vector &p, Vector &expH, std::vector<double> &sumExpH,  std::vector<double> &pk,std::vector<int> &cons) {
+void getSampleGenTest(const Vector &expJ, const IntVector &neighbor, MT::MersenneTwist &mt, int N, int numSteps, int stepSize, std::vector<int> &lattice, std::vector<int> &nonzero, Vector &p, Vector &expH, std::vector<double> &sumExpH, std::vector<double> &pk, std::vector<int> &cons, const Vector &J, bool recMSA, std::string msaout, std::string energyout) {
 
     for (int n=0;n<numSteps;n++) {
     
         for (int k=0;k<stepSize;k++) dynamicsRF(expJ, neighbor, mt.genrand_int31()%N, mt.genrand_real1(), lattice, nonzero, expH, sumExpH);
         updateCorrelations(lattice, nonzero, p, pk, cons);
+        
+        if (recMSA) getEnergies(J, lattice, nonzero, msaout, energyout);
+    
     }
+
+}
+
+
+// Write energies and alignments from the MC sampling
+
+void getEnergies(const Vector &J, std::vector<int> &lattice, std::vector<int> &nonzero, std::string msaout, std::string energyout) {
+
+    double energy=0.0;
+          
+    FILE *pFile=fopen(msaout.c_str(),"a");
+    
+    for (int i=0;i<lattice.size();i++) {
+    
+        if (nonzero[i]) {
+      
+            fprintf(pFile," %d",lattice[i]+1);
+        
+            energy -= J[i][lattice[i]];
+            int off = offset(i, lattice.size());
+            for (int j=i+1;j<lattice.size();j++) { if (nonzero[j]) {
+                energy -= J[off + j][sindex(lattice[i],lattice[j],J[i].size(),J[j].size())];
+            } }
+
+        }
+    
+        else fprintf(pFile," %d",0);
+        
+    }
+    
+    fprintf(pFile,"\n");
+    fclose(pFile);
+    
+    FILE *pFile2=fopen(energyout.c_str(),"a");
+    fprintf(pFile2,"%.6e\n",energy);
+    fclose(pFile2);
 
 }
 
@@ -885,7 +930,7 @@ void getErrorMCLearn(const Vector &q, const Vector &J, Vector &expJ, double B, i
 
 // Compute the inferrence error for a given set of couplings using rejection-free Monte Carlo (getError_RF) with 3-point correlations
 
-void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int numRuns, Vector &p, std::vector<int> &latticeStart, std::vector<double> &pk, std::vector<std::vector<std::vector<std::vector<double> > > > &p3, std::vector<int> &cons) {
+void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int numRuns, Vector &p, std::vector<int> &latticeStart, std::vector<double> &pk, Vector &p3, std::vector<int> &cons, bool recMSA,  std::string msaout, std::string energyout) {
     
     // Create and initialize Monte Carlo variables
 
@@ -895,6 +940,15 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
     
     std::vector<int> lattice(N,0);
     std::vector<int> nonzero(N,0);
+    
+    // Open and close files (?) if writing out energy/MSA
+    
+    if (recMSA) {
+        FILE *pFile=fopen(msaout.c_str(),"w");
+        FILE *pFile2=fopen(energyout.c_str(),"w");
+        fclose(pFile);
+        fclose(pFile2);
+    }
     
     // Neighbors
     
@@ -927,7 +981,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
     mt.init_genrand(seed[0]);
         
     // Thermalize and get initial error
-        
+    
     for (int m=0;m<numRuns;m++) {
         
         for (int i=0;i<lattice.size();i++) {
@@ -939,7 +993,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
         }
         
         setEnergies(expJ, neighbor, lattice, nonzero, expH, sumExpH);
-        getSampleGenTest(expJ, neighbor, mt, N, numSteps, stepSize, lattice, nonzero, p, expH, sumExpH, pk, p3, cons);
+        getSampleGenTest(expJ, neighbor, mt, N, numSteps, stepSize, lattice, nonzero, p, expH, sumExpH, pk, p3, cons, J, recMSA, msaout, energyout);
             
     }
         
@@ -952,7 +1006,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
 	    
         Neff++;
         
-        p[i][a]   /= (double) (numThreads * numSteps * numRuns);
+        p[i][a] /= (double) (numThreads * numSteps * numRuns);
 	    
         for (int j=i+1;j<lattice.size();j++) { for (int b=0;b<p[j].size();b++) {
         
@@ -965,7 +1019,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
 		    
             for (int k=j+1;k<lattice.size();k++) { for (int c=0;c<p[k].size();c++) {
 			    
-                p3[i][j][k][sindex3(a,b,c,p[i].size(),p[j].size(),p[k].size())] /= (double) (numThreads * numSteps * numRuns);
+                p3[index(i,j,k,lattice.size())][sindex3(a,b,c,p[i].size(),p[j].size(),p[k].size())] /= (double) (numThreads * numSteps * numRuns);
                     
             } }
 		
@@ -980,7 +1034,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
 
 // Compute the inferrence error for a given set of couplings using rejection-free Monte Carlo (getError_RF) WITHOUT 3-point correlations
 
-void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int numRuns, Vector &p, std::vector<int> &latticeStart, std::vector<double> &pk, std::vector<int> &cons) {
+void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int numRuns, Vector &p, std::vector<int> &latticeStart, std::vector<double> &pk, std::vector<int> &cons, bool recMSA, std::string msaout, std::string energyout) {
     
     // Create and initialize Monte Carlo variables
 
@@ -990,6 +1044,15 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
     
     std::vector<int> lattice(N,0);
     std::vector<int> nonzero(N,0);
+    
+    // Open and close files (?) if writing out energy/MSA
+    
+    if (recMSA) {
+        FILE *pFile=fopen(msaout.c_str(),"w");
+        FILE *pFile2=fopen(energyout.c_str(),"w");
+        fclose(pFile);
+        fclose(pFile2);
+    }
     
     // Neighbors
     
@@ -1022,7 +1085,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
     mt.init_genrand(seed[0]);
         
     // Thermalize and get initial error
-        
+    
     for (int m=0;m<numRuns;m++) {
         
         for (int i=0;i<lattice.size();i++) {
@@ -1034,7 +1097,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
         }
         
         setEnergies(expJ, neighbor, lattice, nonzero, expH, sumExpH);
-        getSampleGenTest(expJ, neighbor, mt, N, numSteps, stepSize, lattice, nonzero, p, expH, sumExpH, pk, cons);
+        getSampleGenTest(expJ, neighbor, mt, N, numSteps, stepSize, lattice, nonzero, p, expH, sumExpH, pk, cons, J, recMSA, msaout, energyout);
             
     }
         
@@ -1047,7 +1110,7 @@ void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int 
 	    
         Neff++;
         
-        p[i][a]   /= (double) (numThreads * numSteps * numRuns);
+        p[i][a] /= (double) (numThreads * numSteps * numRuns);
 	    
         for (int j=i+1;j<lattice.size();j++) { for (int b=0;b<p[j].size();b++) {
         

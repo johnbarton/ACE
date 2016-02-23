@@ -589,6 +589,225 @@ void getSuperset(const Key &a, const Key &b, Key &superset) {
 }
 
 
+// Expand correlations to include the gauge state explicitly
+// DO NOT OVERWRITE previous correlation vector
+
+void expandCorrelations(const Vector &p, Vector &pgauge) {
+
+    int N = sizetolength(p.size());
+    
+    pgauge.resize(p.size(), std::vector<double>());
+    
+    // Resize and fill in one-point correlations
+    
+    for (int i=0;i<N;i++) {
+    
+        pgauge[i].resize(p[i].size()+1,0);
+    
+        double pia = 1;
+        for (int a=0;a<p[i].size();a++) {
+        
+            pia         -= p[i][a];
+            pgauge[i][a] = p[i][a];
+            
+        }
+    
+        pgauge[i][p[i].size()] = pia;
+        
+    }
+    
+    // Resize and fill in two-point correlations
+        
+    for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) {
+        
+        int idx = index(i,j,N);
+        
+        pgauge[idx].resize(pgauge[i].size()*pgauge[j].size(),0);
+        
+        // Sum correlations and record standard correlations
+        
+        double suma[p[i].size()];   // sum of all pair correlations pij(a,x)
+        double sumb[p[j].size()];   // sum of all pair correlations pij(x,b)
+        double sumall = 0;          // sum of all pair correlations pij(x,x)
+            
+        for (int a=0;a<p[i].size();a++) suma[a]=0;
+        for (int b=0;b<p[j].size();b++) sumb[b]=0;
+            
+        for (int a=0;a<p[i].size();a++) { for (int b=0;b<p[j].size();b++) {
+                
+            int sab = sindex(a,b,p[i].size(),p[j].size());
+                
+            suma[a] += p[idx][sab];
+            sumb[b] += p[idx][sab];
+                
+            int sabx = sindex(a,b,pgauge[i].size(),pgauge[j].size());
+                
+            pgauge[idx][sabx] = p[idx][sab];
+                
+        } }
+            
+        for (int a=0;a<p[i].size();a++) sumall += suma[a];
+            
+        // Record gauge pair correlations
+        
+        for (int a=0;a<p[i].size();a++) pgauge[idx][sindex(a,p[j].size(),pgauge[i].size(),pgauge[j].size())] = p[i][a] - suma[a];
+        for (int b=0;b<p[j].size();b++) pgauge[idx][sindex(p[i].size(),b,pgauge[i].size(),pgauge[j].size())] = p[j][b] - sumb[b];
+        
+        pgauge[idx][sindex(p[i].size(),p[j].size(),pgauge[i].size(),pgauge[j].size())] = pgauge[i][p[i].size()] + pgauge[j][p[j].size()] + sumall - 1;
+        
+    } }
+    
+    // SANITY CHECK
+    double precision = 1e-12;
+    for (int i=0;i<pgauge.size();i++) { for (int a=0;a<pgauge[i].size();a++) {
+    
+        if (pgauge[i][a]+precision<0 || pgauge[i][a]-precision>1) { printf("Impossible correlation value (pgauge)! %le\n",pgauge[i][a]); exit(1); }
+        
+        else if (pgauge[i][a]<0) pgauge[i][a] = 0;
+        else if (pgauge[i][a]>1) pgauge[i][a] = 1;
+        
+    } }
+
+}
+
+
+// Expand correlations to include the gauge state explicitly, INCLUDING 3-point correlations
+// OVERWRITE previous correlation vectors
+
+void expandCorrelations3(Vector &p, Vector &p3) {
+
+    Vector pgauge, p3gauge;
+    expandCorrelations(p, pgauge);  // Expand one- and two-point correlations with above function
+    
+    int N = sizetolength(p.size());
+    
+    // Resize and fill in three-point correlations
+    
+    p3gauge.resize(p3.size(), std::vector<double>());
+        
+    for (int i=0;i<N;i++) { for (int j=i+1;j<N;j++) { for (int k=j+1;k<N;k++) {
+        
+        int ij  = index(i,j,N);
+        int ik  = index(i,k,N);
+        int jk  = index(j,k,N);
+        int ijk = index(i,j,k,N);
+        
+        p3gauge[ijk].resize(pgauge[i].size()*pgauge[j].size()*pgauge[k].size(),0);
+        
+        // Sum correlations and record standard correlations
+        
+        double suma[p[i].size()];               // sum of all 3-correlations pijk(a,x,y)
+        double sumb[p[j].size()];               // sum of all 3-correlations pijk(x,b,y)
+        double sumc[p[k].size()];               // sum of all 3-correlations pijk(x,y,c)
+        double sumab[p[i].size()*p[j].size()];  // sum of all 3-correlations pijk(a,b,x)
+        double sumac[p[i].size()*p[k].size()];  // sum of all 3-correlations pijk(a,x,c)
+        double sumbc[p[j].size()*p[k].size()];  // sum of all 3-correlations pijk(x,b,c)
+            
+        for (int a=0;a<p[i].size();a++) suma[a]=0;
+        for (int b=0;b<p[j].size();b++) sumb[b]=0;
+        for (int c=0;c<p[k].size();c++) sumc[c]=0;
+        for (int ab=0;ab<p[i].size()*p[j].size();ab++) sumab[ab]=0;
+        for (int ac=0;ac<p[i].size()*p[k].size();ac++) sumac[ac]=0;
+        for (int bc=0;bc<p[j].size()*p[k].size();bc++) sumbc[bc]=0;
+            
+        for (int a=0;a<p[i].size();a++) { for (int b=0;b<p[j].size();b++) { for (int c=0;c<p[k].size();c++) {
+                
+            int sabc = sindex3(a,b,c,p[i].size(),p[j].size(),p[k].size());
+                
+            suma[a] += p3[ijk][sabc];
+            sumb[b] += p3[ijk][sabc];
+            sumc[c] += p3[ijk][sabc];
+            
+            sumab[sindex(a,b,p[i].size(),p[j].size())] += p3[ijk][sabc];
+            sumac[sindex(a,c,p[i].size(),p[k].size())] += p3[ijk][sabc];
+            sumbc[sindex(b,c,p[j].size(),p[k].size())] += p3[ijk][sabc];
+                
+            int sabcx = sindex3(a,b,c,pgauge[i].size(),pgauge[j].size(),pgauge[k].size());
+                
+            p3gauge[ijk][sabcx] = p3[ijk][sabc];
+                
+        } } }
+            
+        // Record correlations with one gauge index pijk(a,b,0) = pij(a,b) - sum_c pijk(a,b,c)
+        
+        for (int a=0;a<p[i].size();a++) { for (int b=0;b<p[j].size();b++) {
+        
+            int ab = sindex(a,b,p[i].size(),p[j].size());
+            
+            p3gauge[ijk][sindex3(a,b,p[k].size(),pgauge[i].size(),pgauge[j].size(),pgauge[k].size())] = p[ij][ab] - sumab[ab];
+            
+        } }
+        for (int a=0;a<p[i].size();a++) { for (int c=0;c<p[k].size();c++) {
+        
+            int ac = sindex(a,c,p[i].size(),p[k].size());
+            
+            p3gauge[ijk][sindex3(a,p[j].size(),c,pgauge[i].size(),pgauge[j].size(),pgauge[k].size())] = p[ik][ac] - sumac[ac];
+            
+        } }
+        for (int b=0;b<p[j].size();b++) { for (int c=0;c<p[k].size();c++) {
+        
+            int bc = sindex(b,c,p[j].size(),p[k].size());
+            
+            p3gauge[ijk][sindex3(p[i].size(),b,c,pgauge[i].size(),pgauge[j].size(),pgauge[k].size())] = p[jk][bc] - sumbc[bc];
+            
+        } }
+        
+        // Record correlations with two gauge indices pijk(a,0,0) = pij(a,0) + pik(a,0) + sum_{b,c} pijk(a,b,c) - pi(a)
+        
+        for (int a=0;a<p[i].size();a++) {
+        
+            int ij0 = sindex(a,p[j].size(),pgauge[i].size(),pgauge[j].size());
+            int ik0 = sindex(a,p[k].size(),pgauge[i].size(),pgauge[k].size());
+        
+            p3gauge[ijk][sindex3(a,p[j].size(),p[k].size(),pgauge[i].size(),pgauge[j].size(),pgauge[k].size())] = pgauge[ij][ij0] + pgauge[ik][ik0] + suma[a] - pgauge[i][a];
+            
+        }
+        for (int b=0;b<p[j].size();b++) {
+        
+            int ij0 = sindex(p[i].size(),b,pgauge[i].size(),pgauge[j].size());
+            int jk0 = sindex(b,p[k].size(),pgauge[j].size(),pgauge[k].size());
+        
+            p3gauge[ijk][sindex3(p[i].size(),b,p[k].size(),pgauge[i].size(),pgauge[j].size(),pgauge[k].size())] = pgauge[ij][ij0] + pgauge[jk][jk0] + sumb[b] - pgauge[j][b];
+            
+        }
+        for (int c=0;c<p[k].size();c++) {
+        
+            int ik0 = sindex(p[i].size(),c,pgauge[i].size(),pgauge[k].size());
+            int jk0 = sindex(p[j].size(),c,pgauge[j].size(),pgauge[k].size());
+        
+            p3gauge[ijk][sindex3(p[i].size(),p[j].size(),c,pgauge[i].size(),pgauge[j].size(),pgauge[k].size())] = pgauge[ik][ik0] + pgauge[jk][jk0] + sumc[c] - pgauge[k][c];
+            
+        }
+        
+        // Record correlation with all gauge indices pijk(0,0,0) = pij(0,0) - sum_c pijk(0,0,c)
+        
+        int sxxx = sindex3(p[i].size(),p[j].size(),p[k].size(),pgauge[i].size(),pgauge[j].size(),pgauge[k].size());
+        
+        p3gauge[ijk][sxxx] = pgauge[ij][sindex(p[i].size(),p[j].size(),pgauge[i].size(),pgauge[j].size())];
+        
+        for (int c=0;c<p[k].size();c++) p3gauge[ijk][sxxx] -= p3gauge[ijk][sindex3(p[i].size(),p[j].size(),c,pgauge[i].size(),pgauge[j].size(),pgauge[k].size())];
+        
+    } } }
+    
+    // SANITY CHECK
+    double precision = 1e-12;
+    for (int i=0;i<p3gauge.size();i++) { for (int a=0;a<p3gauge[i].size();a++) {
+    
+        if (p3gauge[i][a]+precision<0 || p3gauge[i][a]-precision>1) { printf("Impossible correlation value (p3gauge)! %le\n",p3gauge[i][a]); exit(1); }
+        
+        else if (p3gauge[i][a]<0) p3gauge[i][a] = 0;
+        else if (p3gauge[i][a]>1) p3gauge[i][a] = 1;
+        
+    } }
+    
+    // OVERWRITE previous vectors and return
+    
+    p  = pgauge;
+    p3 = p3gauge;
+
+}
+
+
 // Take a Hessian matrix in Vector format and "unpack" it into the form of a list of upper triangular
 // matrix entries in linearHess. The shape of the coupling Vector is used to help unpack the Hessian.
 

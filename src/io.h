@@ -19,10 +19,13 @@ void printSupplementaryOutput(FILE *, double, const std::vector<double> &, doubl
 
 void getConsensus(FILE *, std::vector<int> &);
 void getWeights(FILE *, std::vector<double> &);
-void getAlignment(FILE *, FILE *, Vector &, Vector &, std::vector<std::vector<std::vector<std::vector<double> > > > &, std::vector<double> &, std::vector<int> &);
-void getAlignment(FILE *, FILE *, Vector &, Vector &, std::vector<double> &, std::vector<int> &);
+void getAlignment(FILE *, FILE *, Vector &, Vector &, Vector &, std::vector<double> &, std::vector<int> &, std::string);
+void getAlignment(FILE *, FILE *, Vector &, Vector &, std::vector<double> &, std::vector<int> &, std::string);
 void printMagnetisations(FILE *, const Vector &, const Vector &);
-void printCorrelations(FILE *, const Vector &, const Vector &,FILE *, const Vector &, const Vector &);
-void print3points(FILE *, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &,FILE *, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, double);
+void printCorrelations(FILE *, const Vector &, const Vector &,FILE *, const Vector &, const Vector &,double);
+void printCorrelationsError(FILE *, const Vector &, const Vector &, const Vector &, FILE *, const Vector &, const Vector &, const Vector &, double);
+void print3points(FILE *, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, FILE *, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, double);
+void print3pointserror(FILE *, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, FILE *, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, const std::vector<std::vector<std::vector<std::vector<double> > > > &, double);
+
 
 #endif
