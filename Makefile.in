@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = bin/sce$(EXEEXT) bin/qls$(EXEEXT) bin/qgt$(EXEEXT)
+bin_PROGRAMS = bin/ace$(EXEEXT) bin/qls$(EXEEXT) bin/qgt$(EXEEXT)
 TESTS = $(am__EXEEXT_1)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = .
@@ -110,6 +110,12 @@ am__EXEEXT_1 = tests/tools_innerProduct$(EXEEXT) \
 	tests/tools_eraseInPlace$(EXEEXT) tests/inverse_getZ$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
+am_bin_ace_OBJECTS = src/mainACE.$(OBJEXT) src/algorithm.$(OBJEXT) \
+	src/inverse.$(OBJEXT) src/io.$(OBJEXT) \
+	src/monteCarlo.$(OBJEXT) src/sparseInverse.$(OBJEXT) \
+	src/tools.$(OBJEXT)
+bin_ace_OBJECTS = $(am_bin_ace_OBJECTS)
+bin_ace_LDADD = $(LDADD)
 am_bin_qgt_OBJECTS = src/mainQGT.$(OBJEXT) src/io.$(OBJEXT) \
 	src/monteCarlo.$(OBJEXT) src/qGenTest.$(OBJEXT) \
 	src/tools.$(OBJEXT)
@@ -120,12 +126,6 @@ am_bin_qls_OBJECTS = src/mainQLS.$(OBJEXT) src/io.$(OBJEXT) \
 	src/tools.$(OBJEXT)
 bin_qls_OBJECTS = $(am_bin_qls_OBJECTS)
 bin_qls_LDADD = $(LDADD)
-am_bin_sce_OBJECTS = src/mainSCE.$(OBJEXT) src/algorithm.$(OBJEXT) \
-	src/inverse.$(OBJEXT) src/io.$(OBJEXT) \
-	src/monteCarlo.$(OBJEXT) src/sparseInverse.$(OBJEXT) \
-	src/tools.$(OBJEXT)
-bin_sce_OBJECTS = $(am_bin_sce_OBJECTS)
-bin_sce_LDADD = $(LDADD)
 am_tests_inverse_getZ_OBJECTS = tests/inverse_getZ.$(OBJEXT) \
 	src/tools.$(OBJEXT) src/inverse.$(OBJEXT) \
 	src/sparseInverse.$(OBJEXT)
@@ -199,14 +199,14 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(bin_qgt_SOURCES) $(bin_qls_SOURCES) $(bin_sce_SOURCES) \
+SOURCES = $(bin_ace_SOURCES) $(bin_qgt_SOURCES) $(bin_qls_SOURCES) \
 	$(tests_inverse_getZ_SOURCES) $(tests_tools_L1_SOURCES) \
 	$(tests_tools_L2_SOURCES) $(tests_tools_LInfinity_SOURCES) \
 	$(tests_tools_eraseInPlace_SOURCES) \
 	$(tests_tools_innerProduct_SOURCES) \
 	$(tests_tools_insertInPlace_SOURCES)
-DIST_SOURCES = $(bin_qgt_SOURCES) $(bin_qls_SOURCES) \
-	$(bin_sce_SOURCES) $(tests_inverse_getZ_SOURCES) \
+DIST_SOURCES = $(bin_ace_SOURCES) $(bin_qgt_SOURCES) \
+	$(bin_qls_SOURCES) $(tests_inverse_getZ_SOURCES) \
 	$(tests_tools_L1_SOURCES) $(tests_tools_L2_SOURCES) \
 	$(tests_tools_LInfinity_SOURCES) \
 	$(tests_tools_eraseInPlace_SOURCES) \
@@ -545,8 +545,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-bin_sce_SOURCES = \
-	src/mainSCE.cpp \
+bin_ace_SOURCES = \
+	src/mainACE.cpp \
 	src/algorithm.cpp \
 	src/algorithm.h \
 	src/dataStructures.h \
@@ -706,17 +706,29 @@ src/$(am__dirstamp):
 src/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/mainQGT.$(OBJEXT): src/$(am__dirstamp) \
+src/mainACE.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/algorithm.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/inverse.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/io.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 src/monteCarlo.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
-src/qGenTest.$(OBJEXT): src/$(am__dirstamp) \
+src/sparseInverse.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/tools.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
 bin/$(am__dirstamp):
 	@$(MKDIR_P) bin
 	@: > bin/$(am__dirstamp)
+
+bin/ace$(EXEEXT): $(bin_ace_OBJECTS) $(bin_ace_DEPENDENCIES) $(EXTRA_bin_ace_DEPENDENCIES) bin/$(am__dirstamp)
+	@rm -f bin/ace$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(bin_ace_OBJECTS) $(bin_ace_LDADD) $(LIBS)
+src/mainQGT.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/qGenTest.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 bin/qgt$(EXEEXT): $(bin_qgt_OBJECTS) $(bin_qgt_DEPENDENCIES) $(EXTRA_bin_qgt_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/qgt$(EXEEXT)
@@ -729,18 +741,6 @@ src/qLearnSparse.$(OBJEXT): src/$(am__dirstamp) \
 bin/qls$(EXEEXT): $(bin_qls_OBJECTS) $(bin_qls_DEPENDENCIES) $(EXTRA_bin_qls_DEPENDENCIES) bin/$(am__dirstamp)
 	@rm -f bin/qls$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bin_qls_OBJECTS) $(bin_qls_LDADD) $(LIBS)
-src/mainSCE.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
-src/algorithm.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
-src/inverse.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
-src/sparseInverse.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
-
-bin/sce$(EXEEXT): $(bin_sce_OBJECTS) $(bin_sce_DEPENDENCIES) $(EXTRA_bin_sce_DEPENDENCIES) bin/$(am__dirstamp)
-	@rm -f bin/sce$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(bin_sce_OBJECTS) $(bin_sce_LDADD) $(LIBS)
 tests/$(am__dirstamp):
 	@$(MKDIR_P) tests
 	@: > tests/$(am__dirstamp)
@@ -801,9 +801,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/algorithm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/inverse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/io.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mainACE.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mainQGT.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mainQLS.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/mainSCE.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/monteCarlo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/qGenTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/qLearnSparse.Po@am__quote@

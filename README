@@ -25,5 +25,5 @@ To build the program, just type at the command line:
 ./configure
 make
 
-This produces an executable file "sce" which runs the program.
+This produces an executable file "ace" which runs the program.
 

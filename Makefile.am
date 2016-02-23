@@ -1,12 +1,12 @@
  ## Process this file with automake to produce Makefile.in
 
 bin_PROGRAMS = \
-	bin/sce \
+	bin/ace \
 	bin/qls \
 	bin/qgt
 
-bin_sce_SOURCES = \
-	src/mainSCE.cpp \
+bin_ace_SOURCES = \
+	src/mainACE.cpp \
 	src/algorithm.cpp \
 	src/algorithm.h \
 	src/dataStructures.h \
