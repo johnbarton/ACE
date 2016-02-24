@@ -80,7 +80,7 @@ void updateStep_GI(const Vector &, const Vector &, const IntVector &, double, do
 bool isClose(double, double, double);
 bool isCloseC(double, double, double, double, double);
 void chop(Vector &);
-void runLearn(RunParameters &);
+int runLearn(RunParameters &);
 
 
 #endif

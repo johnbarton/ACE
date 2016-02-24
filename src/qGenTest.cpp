@@ -22,7 +22,7 @@
 
 // Runs the main program
 
-void runGenTest(RunParameters &r) {
+int runGenTest(RunParameters &r) {
 
     // Define variables
 
@@ -50,7 +50,7 @@ void runGenTest(RunParameters &r) {
     FILE *consIn = fopen(r.getConsensusInfile().c_str(),"r");
 
     if (consIn!=NULL) getConsensus(consIn,cons);
-    else { printf("Error reading input from file %s\n\n",r.getConsensusInfile().c_str()); exit(1); }
+    else { printf("Error reading input from file %s\n\n",r.getConsensusInfile().c_str()); return EXIT_FAILURE; }
     fclose(consIn);
     
     if (r.useVerbose) {
@@ -66,7 +66,7 @@ void runGenTest(RunParameters &r) {
     FILE *dataIn=fopen(r.getInfile().c_str(),"r");
 
     if (dataIn!=NULL) getCouplings(dataIn,J);
-    else { printf("Error reading input from file %s",r.getInfile().c_str()); exit(1); }
+    else { printf("Error reading input from file %s",r.getInfile().c_str()); return EXIT_FAILURE; }
     fclose(dataIn);
 
     // Resize expJ
@@ -124,7 +124,7 @@ void runGenTest(RunParameters &r) {
         if (computeThreePoints) getAlignment(alIn, weightIn, J, q, q3, qk, cons, r.MSAEnOutfile());
         else                    getAlignment(alIn, weightIn, J, q,     qk, cons, r.MSAEnOutfile());
     }
-    else { printf("Error reading input from file %s\n\n",r.getInfileAl().c_str()); exit(1); }
+    else { printf("Error reading input from file %s\n\n",r.getInfileAl().c_str()); return EXIT_FAILURE; }
     fclose(alIn);
     if (weightIn!=NULL) fclose(weightIn);
 
@@ -305,6 +305,8 @@ void runGenTest(RunParameters &r) {
 
     if (computeThreePoints) printf("Mean square root deviations: P %f, P2 %f, P3 %f, C2 %f, C3 %f \n\n",RMSErr[0],RMSErr[1],RMSErr[3],RMSErr[2],RMSErr[4]);
     else                    printf("Mean square root deviations: P %f, P2 %f, C2 %f \n\n",RMSErr[0],RMSErr[1],RMSErr[2]);
+    
+    return EXIT_SUCCESS;
 
 }
 

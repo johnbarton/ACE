@@ -86,7 +86,7 @@ public:
 };
 
 
-void runGenTest(RunParameters &);
+int runGenTest(RunParameters &);
 
 
 #endif

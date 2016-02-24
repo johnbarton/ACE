@@ -133,8 +133,6 @@ int main(int argc, char *argv[]) {
         
     }
     
-    runLearn(r);
+    return runLearn(r);
     
-	return 0;
-
 }

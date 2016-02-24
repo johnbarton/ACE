@@ -147,8 +147,6 @@ int main(int argc, char *argv[]) {
         
     }
     
-    runGenTest(r);
-    
-	return 0;
+    return runGenTest(r);
 
 }

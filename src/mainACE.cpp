@@ -198,8 +198,6 @@ int main(int argc, char *argv[]) {
                 
     }
     
-    run(r);
-    
-    return 0;
+    return run(r);
     
 }

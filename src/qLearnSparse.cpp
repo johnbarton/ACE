@@ -281,7 +281,7 @@ void chop(Vector &J) {
 
 // Runs the main program
 
-void runLearn(RunParameters &r) {
+int runLearn(RunParameters &r) {
 
     // Define variables
     
@@ -293,7 +293,7 @@ void runLearn(RunParameters &r) {
     FILE *compIn=fopen(r.getCompareInfile().c_str(),"r");
         
     if (compIn!=NULL) getCorrelations(compIn,q);
-    else { printf("Error reading input from file %s",r.getCompareInfile().c_str()); exit(1); }
+    else { printf("Error reading input from file %s",r.getCompareInfile().c_str()); return EXIT_FAILURE; }
     fclose(compIn);
     
     p.resize(q.size(),std::vector<double>());
@@ -304,7 +304,7 @@ void runLearn(RunParameters &r) {
     FILE *dataIn=fopen(r.getInfile().c_str(),"r");
         
     if (dataIn!=NULL) getCouplings(dataIn,J);
-    else { printf("Error reading input from file %s",r.getInfile().c_str()); exit(1); }
+    else { printf("Error reading input from file %s",r.getInfile().c_str()); return EXIT_FAILURE; }
     fclose(dataIn);
     
     FILE *compOut=fopen(r.getCompareOutfile().c_str(),"w");
@@ -424,7 +424,7 @@ void runLearn(RunParameters &r) {
         FILE *dataOut=fopen(r.getCouplingsOutfile().c_str(),"w");
         
         if (dataOut!=NULL) printCouplings(dataOut, J);
-        else { printf("Error writing output to file %s",r.getCouplingsOutfile().c_str()); exit(1); }
+        else { printf("Error writing output to file %s",r.getCouplingsOutfile().c_str()); return EXIT_FAILURE;; }
         fclose(dataOut);
     
     }
@@ -434,8 +434,10 @@ void runLearn(RunParameters &r) {
     FILE *dataOut=fopen(r.getCouplingsOutfile().c_str(),"w");
     
     if (dataOut!=NULL) printCouplings(dataOut, J);
-    else { printf("Error writing output to file %s",r.getCouplingsOutfile().c_str()); exit(1); }
+    else { printf("Error writing output to file %s",r.getCouplingsOutfile().c_str()); return EXIT_FAILURE;; }
     fclose(dataOut);
+    
+    return EXIT_SUCCESS;
     
 }
 

@@ -661,10 +661,10 @@ void expandCorrelations(const Vector &p, Vector &pgauge) {
     double precision = 1e-12;
     for (int i=0;i<pgauge.size();i++) { for (int a=0;a<pgauge[i].size();a++) {
     
-        if (pgauge[i][a]+precision<0 || pgauge[i][a]-precision>1) { printf("Impossible correlation value (pgauge)! %le\n",pgauge[i][a]); exit(1); }
+        if (pgauge[i][a]+precision<0 || pgauge[i][a]-precision>1) { printf("Warning: impossible correlation value (pgauge)! %le\nThere may be insufficient precision",pgauge[i][a]); }
         
-        else if (pgauge[i][a]<0) pgauge[i][a] = 0;
-        else if (pgauge[i][a]>1) pgauge[i][a] = 1;
+        if (pgauge[i][a]<precision)   pgauge[i][a] = precision;
+        if (pgauge[i][a]>1-precision) pgauge[i][a] = 1-precision;
         
     } }
 
@@ -793,10 +793,10 @@ void expandCorrelations3(Vector &p, Vector &p3) {
     double precision = 1e-12;
     for (int i=0;i<p3gauge.size();i++) { for (int a=0;a<p3gauge[i].size();a++) {
     
-        if (p3gauge[i][a]+precision<0 || p3gauge[i][a]-precision>1) { printf("Impossible correlation value (p3gauge)! %le\n",p3gauge[i][a]); exit(1); }
+        if (p3gauge[i][a]+precision<0 || p3gauge[i][a]-precision>1) { printf("Warning: impossible correlation value (p3gauge)! %le\nThere may be insufficient precision",p3gauge[i][a]); }
         
-        else if (p3gauge[i][a]<0) p3gauge[i][a] = 0;
-        else if (p3gauge[i][a]>1) p3gauge[i][a] = 1;
+        if (p3gauge[i][a]<precision)   p3gauge[i][a] = precision;
+        if (p3gauge[i][a]>1-precision) p3gauge[i][a] = 1-precision;
         
     } }
     

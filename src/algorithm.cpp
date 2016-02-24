@@ -601,7 +601,7 @@ void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantC
 
 // Runs the main program
 
-void run(RunParameters &r) {
+int run(RunParameters &r) {
     
     // Retrieve correlations from file and set system, key sizes
     
@@ -615,7 +615,7 @@ void run(RunParameters &r) {
         keySize = (N + storageSize - 1) / storageSize;
     
     }
-    else { printf("Problem retrieving data from file: %s!\n",r.getCorrelationsInfile().c_str()); exit(1); }
+    else { printf("Problem retrieving data from file: %s!\n",r.getCorrelationsInfile().c_str()); return EXIT_FAILURE; }
     fclose(datain);
     
     // Open supplementary output file
@@ -665,20 +665,20 @@ void run(RunParameters &r) {
     
     if (r.useGI) {
     
-        regularizeS_ptr=&regularizeS_L2_GI;
-        regularizeS_gradOnly_ptr=&regularizeS_L2_gradOnly_GI;
-        epsilonP2_ptr=&epsilonP2_GI;
-        epsilonC_ptr=&epsilonC_GI;
-        getMaxError_ptr=&getMaxError_GI;
+        regularizeS_ptr          = &regularizeS_L2_GI;
+        regularizeS_gradOnly_ptr = &regularizeS_L2_gradOnly_GI;
+        epsilonP2_ptr            = &epsilonP2_GI;
+        epsilonC_ptr             = &epsilonC_GI;
+        getMaxError_ptr          = &getMaxError_GI;
         
     }
     else {
     
-        regularizeS_ptr=&regularizeS_L2;
-        regularizeS_gradOnly_ptr=&regularizeS_L2_gradOnly;
-        epsilonP2_ptr=&epsilonP2;
-        epsilonC_ptr=&epsilonC;
-        getMaxError_ptr=&getMaxError;
+        regularizeS_ptr          = &regularizeS_L2;
+        regularizeS_gradOnly_ptr = &regularizeS_L2_gradOnly;
+        epsilonP2_ptr            = &epsilonP2;
+        epsilonC_ptr             = &epsilonC;
+        getMaxError_ptr          = &getMaxError;
         
     }
     
@@ -894,6 +894,8 @@ void run(RunParameters &r) {
 
     printSupplementaryOutput(supout, theta, error, finalS, maxClusterSize, numClusters, numSignificantClusters);
     fclose(supout);
+    
+    return EXIT_SUCCESS;
 
 }
 
