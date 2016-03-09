@@ -969,6 +969,34 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
     std::vector<double> lastS(10,S);
     double armijoS=LInfinity(lastS);
     
+//    ///////
+//    //DEBUG
+//    if (length>0) {
+//        printf("J: {\n");
+//        for (int i=0;i<J.size();i++) {
+//            printf("\t{");
+//            for (int j=0;j<J[i].size();j++) printf(" %.4e",J[i][j]);
+//            printf(" }\n");
+//        }
+//        printf("\t}\n");
+//        printf("grad: {\n");
+//        for (int i=0;i<J.size();i++) {
+//            printf("\t{");
+//            for (int j=0;j<J[i].size();j++) printf(" %.4e",grad[i][j]);
+//            printf(" }\n");
+//        }
+//        printf("\t}\n");
+////        printf("hess: {\n");
+////        for (int i=0;i<hess.size();i++) {
+////            printf("\t{");
+////            for (int j=0;j<hess[i].size();j++) printf(" %.4e",hess[i][j]);
+////            printf(" }\n");
+////        }
+////        printf("\t}\n");
+//    }
+//    //DEBUG
+//    ///////
+    
     // If not optimal, continue to loop
     
     if (eps>EPSG) descentStep = useDescent(grad);
@@ -1007,7 +1035,47 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
         }
         count++;
         
+//        ///////
+//        //DEBUG
+//        if (count>1000 && count<1010) {
+//            printf("J: {\n");
+//            for (int i=0;i<J.size();i++) {
+//                printf("\t{");
+//                for (int j=0;j<J[i].size();j++) printf(" %.4e",J[i][j]);
+//                printf(" }\n");
+//            }
+//            printf("\t}\n");
+//            printf("step: {\n");
+//            for (int i=0;i<J.size();i++) {
+//                printf("\t{");
+//                for (int j=0;j<J[i].size();j++) printf(" %.4e",step[i][j]);
+//                printf(" }\n");
+//            }
+//            printf("\t}\n");
+//            printf("grad: {\n");
+//            for (int i=0;i<J.size();i++) {
+//                printf("\t{");
+//                for (int j=0;j<J[i].size();j++) printf(" %.4e",grad[i][j]);
+//                printf(" }\n");
+//            }
+//            printf("\t}\n");
+////            printf("hess: {\n");
+////            for (int i=0;i<hess.size();i++) {
+////                printf("\t{");
+////                for (int j=0;j<hess[i].size();j++) printf(" %.4e",hess[i][j]);
+////                printf(" }\n");
+////            }
+////            printf("\t}\n");
+//        }
+//        //DEBUG
+//        ///////
+        
+        
     }
+    
+    //DEBUG
+    //printf("iterations: %d\n",count);
+    //DEBUG
     
     // Return S
     

@@ -241,12 +241,12 @@ void makeCluster(Cluster &cluster, const Key &key, int clusterSize) {
 		
 	}
     
-    //DEBUG
+//    //DEBUG
 //    if (clusterSize>0) {
 //    printf("cluster {%d",spins[0]);
 //    for (int i=1;i<clusterSize;i++) printf(", %d",spins[i]);
 //    printf("}\n"); }
-    //DEBUG
+//    //DEBUG
     
 	// Compute values and assign them to the cluster
     

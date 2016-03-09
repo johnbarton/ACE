@@ -113,13 +113,13 @@ int main(int argc, char *argv[]) {
         
         // Location of input/output files
         
-        if      (strcmp(argv[i],"-d")==0)   { if (++i==argc) break; else r.directory=argv[i];                               }
-        else if (strcmp(argv[i],"-i")==0)   { if (++i==argc) break; else r.infile=argv[i];                                  }
-        else if (strcmp(argv[i],"-o")==0)   { if (++i==argc) break; else r.outfile=argv[i];                                 }
-        else if (strcmp(argv[i],"-c")==0)   { if (++i==argc) break; else r.consfile=argv[i];                                }
-        else if (strcmp(argv[i],"-w")==0)   { if (++i==argc) break; else r.weightfile=argv[i];                              }
-        else if (strcmp(argv[i],"-m")==0)   { if (++i==argc) break; else r.msafile=argv[i];                                 }
-        else if (strcmp(argv[i],"-s")==0)   { if (++i==argc) break; else { r.useStart=true; r.startfile=argv[i]; }          }
+        if      (strcmp(argv[i],"-d")==0)   { if (++i==argc) break; else r.directory=argv[i];                      }
+        else if (strcmp(argv[i],"-i")==0)   { if (++i==argc) break; else r.infile=argv[i];                         }
+        else if (strcmp(argv[i],"-o")==0)   { if (++i==argc) break; else r.outfile=argv[i];                        }
+        else if (strcmp(argv[i],"-c")==0)   { if (++i==argc) break; else r.consfile=argv[i];                       }
+        else if (strcmp(argv[i],"-w")==0)   { if (++i==argc) break; else r.weightfile=argv[i];                     }
+        else if (strcmp(argv[i],"-m")==0)   { if (++i==argc) break; else r.msafile=argv[i];                        }
+        else if (strcmp(argv[i],"-s")==0)   { if (++i==argc) break; else { r.useStart=true; r.startfile=argv[i]; } }
         
         // Regularization strengths and settings
         
@@ -129,19 +129,19 @@ int main(int argc, char *argv[]) {
                 
         // Monte Carlo settings
         
-        else if (strcmp(argv[i],"-b")==0)      { if (++i==argc) break; else r.sampleB=strtodouble(argv[i]);                 }
-        else if (strcmp(argv[i],"-mcb")==0)    { if (++i==argc) break; else r.b=strtoint(argv[i]);                          }
-        else if (strcmp(argv[i],"-mcr")==0)    { if (++i==argc) break; else r.runs=strtoint(argv[i]);                       }
-        else if (strcmp(argv[i],"-p3")==0)     { r.computeP3=true;                                                          }
+        else if (strcmp(argv[i],"-b")==0)      { if (++i==argc) break; else r.sampleB=strtodouble(argv[i]); }
+        else if (strcmp(argv[i],"-mcb")==0)    { if (++i==argc) break; else r.b=strtoint(argv[i]);          }
+        else if (strcmp(argv[i],"-mcr")==0)    { if (++i==argc) break; else r.runs=strtoint(argv[i]);       }
+        else if (strcmp(argv[i],"-p3")==0)     { r.computeP3=true;                                          }
         
         // Optional output
         
-        else if (strcmp(argv[i],"-p2full")==0)  { r.computeP2=true;                                                         }
-        else if (strcmp(argv[i],"-p3full")==0)  { r.computeP3=true; r.pthresh=0;                                            }
-        else if (strcmp(argv[i],"-pthresh")==0) { if (++i==argc) break; else r.pthresh=strtodouble(argv[i]);                }
-        else if (strcmp(argv[i],"-nmax")==0)    { if (++i==argc) break; else { r.useNMax=true; r.nmax=strtodouble(argv[i]); } }
-        else if (strcmp(argv[i],"-msaout")==0)  { r.recMSA=true;                                                            }
-        else if (strcmp(argv[i],"-v")==0)       { r.useVerbose=true;                                                        }
+        else if (strcmp(argv[i],"-p2full")==0)  { r.computeP2=true;                                                                      }
+        else if (strcmp(argv[i],"-p3full")==0)  { r.computeP3=true; r.pthresh=0; r.computePThresh=false;                                 }
+        else if (strcmp(argv[i],"-pthresh")==0) { if (++i==argc) break; else { r.pthresh=strtodouble(argv[i]); r.computePThresh=false; } }
+        else if (strcmp(argv[i],"-nmax")==0)    { if (++i==argc) break; else { r.useNMax=true; r.nmax=strtodouble(argv[i]); }            }
+        else if (strcmp(argv[i],"-msaout")==0)  { r.recMSA=true;                                                                         }
+        else if (strcmp(argv[i],"-v")==0)       { r.useVerbose=true;                                                                     }
         
         else printf("Unrecognized command! '%s'\n",argv[i]);
         

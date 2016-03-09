@@ -209,7 +209,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, Vector &p3,
         getWeights(weightIn,weight);
         for (int i=0;i<weight.size();i++) Meff += weight[i];
         
-        printf("Re-weighting: Beff = %.2f with B = %d\n\n",Meff,B);
+        printf("Re-weighting: Beff = %.2f with B = %d\n",Meff,B);
         
     }
     else {
@@ -217,7 +217,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, Vector &p3,
         Meff = (double) B;
         for (int i=0;i<B;i++) weight.push_back(1.0);
         
-        printf("No re-weighting vector found: Beff = %.2f with B = %d\n\n",Meff,B);
+        printf("No re-weighting vector found: Beff = %.2f with B = %d\n",Meff,B);
    
     }
   
@@ -324,7 +324,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
         getWeights(weightIn,weight);
         for (int i=0;i<weight.size();i++) Meff += weight[i];
         
-        printf("Re-weighting: Beff = %.2f with B = %d\n\n",Meff,B);
+        printf("Re-weighting: Beff = %.2f with B = %d\n",Meff,B);
         
     }
     else {
@@ -332,7 +332,7 @@ void getAlignment(FILE *input, FILE *weightIn, Vector &J, Vector &p, std::vector
         Meff = (double) B;
         for (int i=0;i<B;i++) weight.push_back(1.0);
         
-        printf("No re-weighting vector found: Beff = %.2f with B = %d\n\n",Meff,B);
+        printf("No re-weighting vector found: Beff = %.2f with B = %d\n",Meff,B);
    
     }
   
