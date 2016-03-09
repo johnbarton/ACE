@@ -567,7 +567,7 @@ void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> 
         
             p[off + j][sindex(lattice[i],lattice[j],p[i].size(),p[j].size())]+=1;
 	    
-            for (int k=j+1;k<lattice.size();k++) {  if (nonzero[k]) {
+            for (int k=j+1;k<lattice.size();k++) { if (nonzero[k]) {
 				    
                 p3[index(i,j,k,lattice.size())][sindex3(lattice[i],lattice[j],lattice[k],p[i].size(),p[j].size(),p[k].size())]+=1;
 
@@ -581,10 +581,8 @@ void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> 
     for (int i=0;i<lattice.size();i++) {
     
         if (lattice[i]!=cons[i]) nmut++;
-        else if (cons[i]>=0)     nmut++;
         
     }
-    
     pk[nmut]+=1;
 
 }
@@ -612,10 +610,8 @@ void updateCorrelations(const std::vector<int> &lattice, const std::vector<int> 
     for (int i=0;i<lattice.size();i++) {
     
         if (lattice[i]!=cons[i]) nmut++;
-        else if (cons[i]>=0)     nmut++;
-        
-    }
     
+    }
     pk[nmut]+=1;
 
 }
@@ -930,7 +926,7 @@ void getErrorMCLearn(const Vector &q, const Vector &J, Vector &expJ, double B, i
 
 // Compute the inferrence error for a given set of couplings using rejection-free Monte Carlo (getError_RF) with 3-point correlations
 
-void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int numRuns, Vector &p, std::vector<int> &latticeStart, std::vector<double> &pk, Vector &p3, std::vector<int> &cons, bool recMSA,  std::string msaout, std::string energyout) {
+void getErrorGenTest(const Vector &J, Vector &expJ, double B, int numSteps, int numRuns, Vector &p, std::vector<int> &latticeStart, std::vector<double> &pk, Vector &p3, std::vector<int> &cons, bool recMSA, std::string msaout, std::string energyout) {
     
     // Create and initialize Monte Carlo variables
 

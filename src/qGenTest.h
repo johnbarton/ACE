@@ -33,6 +33,7 @@ public:
     bool useGI;             // If true, use gauge invariant regularization for couplings
     bool computeP2;         // If true, compute 2-point correlations
     bool computeP3;         // If true, compute 3-point correlations
+    bool computePThresh;    // If true, compute pthresh from average 1-point correlations
     bool useNMax;           // If true, specify a maximum number of 3-point correlations to write to file
     bool recMSA;            // If true, print Monte Carlo alignment and compute energies
     bool useVerbose;        // If true, print extra information while program is running
@@ -59,6 +60,7 @@ public:
         useGI=false;
         computeP2=true;
         computeP3=false;
+        computePThresh=true;
         useNMax=false;
         recMSA=false;
         useVerbose=false;

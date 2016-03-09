@@ -50,14 +50,14 @@ int runGenTest(RunParameters &r) {
     FILE *consIn = fopen(r.getConsensusInfile().c_str(),"r");
 
     if (consIn!=NULL) getConsensus(consIn,cons);
-    else { printf("Error reading input from file %s\n\n",r.getConsensusInfile().c_str()); return EXIT_FAILURE; }
+    else { printf("Error reading input from file %s\n",r.getConsensusInfile().c_str()); return EXIT_FAILURE; }
     fclose(consIn);
     
     if (r.useVerbose) {
 
         printf("Reference sequence: ");
         for (int i=0;i<cons.size();i++) printf(" %d",cons[i]);
-        printf("\n\n");
+        printf("\n");
 
     }
 
@@ -124,7 +124,7 @@ int runGenTest(RunParameters &r) {
         if (computeThreePoints) getAlignment(alIn, weightIn, J, q, q3, qk, cons, r.MSAEnOutfile());
         else                    getAlignment(alIn, weightIn, J, q,     qk, cons, r.MSAEnOutfile());
     }
-    else { printf("Error reading input from file %s\n\n",r.getInfileAl().c_str()); return EXIT_FAILURE; }
+    else { printf("Error reading input from file %s\n",r.getInfileAl().c_str()); return EXIT_FAILURE; }
     fclose(alIn);
     if (weightIn!=NULL) fclose(weightIn);
 
@@ -144,6 +144,16 @@ int runGenTest(RunParameters &r) {
     else { for (int i=0;i<N;i++) lattice[i]=(int) p[i].size(); }
 
     // Run MC and get correlations
+    
+//    //DEBUG
+//    for (int i=0;i<lattice.size();i++) printf("%d ",lattice[i]);
+//    printf("\n");
+//    for (int i=0;i<qk.size();i++) printf("%le ",qk[i]);
+//    printf("\n");
+//    for (int i=0;i<pk.size();i++) printf("%le ",pk[i]);
+//    printf("\n");
+    for (int i=0;i<cons.size();i++) { if (cons[i]<0) cons[i]=p[i].size(); }
+//    //DEBUG
 
     srand((unsigned)time(0));
 
@@ -158,7 +168,7 @@ int runGenTest(RunParameters &r) {
     double erelp2       = (*epsilonP2_ptr)(q, p, N, maxPrecision, J, gamma);
     double emax         = (*getMaxError_ptr)( q, p, maxPrecision, J, gamma, alpha);
 
-    printf("\nRelative errors (w/out gauge correlations): P %f, P2 %f MAX %f gamma %f\n",erelp1,erelp2,emax,gamma);
+    printf("Relative errors (w/out gauge correlations): P %f, P2 %f MAX %f gamma %f\n",erelp1,erelp2,emax,gamma);
     
     // Expand correlations to include gauge states
     
@@ -177,7 +187,7 @@ int runGenTest(RunParameters &r) {
     // Compute and print correlations
     
     FILE *pkout = fopen(r.getPKOutfile().c_str(),"w");
-    for (int i=0;i<N;i++) fprintf(pkout,"%d %le %le\n",i,qk[i],pk[i]);
+    for (int i=0;i<qk.size();i++) fprintf(pkout,"%d %le %le\n",i,qk[i],pk[i]);
     fclose(pkout);
     
     FILE *p1out = fopen(r.getMOutfile().c_str(),"w");
@@ -210,6 +220,13 @@ int runGenTest(RunParameters &r) {
     double nmax       = (r.useNMax) ? r.nmax : sizes[3];    // rough maximum number of 3-point correlations to print
     double randthresh = nmax/sizes[3];                      // randomly select correlations for printing if random < randthresh OR size > pthresh
     double pthresh    = r.pthresh;                          // threshold correlation value for printing
+    
+    if (r.computePThresh) {     // default value: 10 x (avg q)^3
+    
+        double meanq = ((double) N) / sizes[0];
+        pthresh      = 10.0 * pow(meanq, 3.0);
+        
+    }
     
     MT::MersenneTwist mt;
     mt.init_genrand(rand());
@@ -298,13 +315,23 @@ int runGenTest(RunParameters &r) {
 
     } }
     
+    // Normalize averages
+    
+    for (int i=0;i<averages.size();i++) { for (int j=0;j<averages[i].size();j++) averages[i][j] /= sizes[i]; }
+    
     // Compute and print errors
     
-    std::vector<double> RMSErr(5,0);    // sqrt( q^2 + p^2 - qp )
-    for (int i=0;i<RMSErr.size();i++) RMSErr[i] = sqrt((averages[i][3]+averages[i][4]-averages[i][2])/sizes[i]);
+    std::vector<double> RMSErr(5,0);    // sqrt( q^2 + p^2 - 2 qp )
+    for (int i=0;i<RMSErr.size();i++) RMSErr[i] = sqrt(averages[i][3] + averages[i][4] - (2*averages[i][2]));
 
-    if (computeThreePoints) printf("Mean square root deviations: P %f, P2 %f, P3 %f, C2 %f, C3 %f \n\n",RMSErr[0],RMSErr[1],RMSErr[3],RMSErr[2],RMSErr[4]);
-    else                    printf("Mean square root deviations: P %f, P2 %f, C2 %f \n\n",RMSErr[0],RMSErr[1],RMSErr[2]);
+    if (computeThreePoints) printf("Root mean square deviations: P %f, P2 %f, P3 %f, C2 %f, C3 %f \n",RMSErr[0],RMSErr[1],RMSErr[3],RMSErr[2],RMSErr[4]);
+    else                    printf("Root mean square deviations: P %f, P2 %f, C2 %f \n",RMSErr[0],RMSErr[1],RMSErr[2]);
+    
+    std::vector<double> Pearson(5,0);   // (qp - q*p) / sqrt(q^2 - (q)^2) sqrt(p^2 - (p)^2)
+    for (int i=0;i<Pearson.size();i++) Pearson[i] = (averages[i][2]-(averages[i][0]*averages[i][1])) / (sqrt(averages[i][3]-(averages[i][0]*averages[i][0])) * sqrt(averages[i][4]-(averages[i][1]*averages[i][1])));
+
+    if (computeThreePoints) printf("Pearson correlations: P %f, P2 %f, P3 %f, C2 %f, C3 %f \n",Pearson[0],Pearson[1],Pearson[3],Pearson[2],Pearson[4]);
+    else                    printf("Pearson correlations: P %f, P2 %f, C2 %f \n",Pearson[0],Pearson[1],Pearson[2]);
     
     return EXIT_SUCCESS;
 
