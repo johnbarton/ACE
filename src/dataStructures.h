@@ -105,7 +105,7 @@ public:
         
         kmin=0;
         kmax=0;
-        sampleB=10000;
+        sampleB=1000;
         gamma0=1.0e-4;
         gamma2=0.0;
         thetaMin=1.0e-10;

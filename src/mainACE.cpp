@@ -36,7 +36,7 @@
     different type of output file will have a different file type, 
     e.g. .j for couplings.
     
- -cmap: string
+ -ss: string
     Default: none 
     When the network of interactions (e.g. contact map) is known, a list
     of perselected 2-site clusters can be given. "string" represent the name 
