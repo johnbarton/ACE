@@ -2,12 +2,17 @@
 src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
+# Table of contents
+
+[TOC]
 
 # Introduction
 
-ACE is a software package designed to quickly and accurately infer [Ising](https://en.wikipedia.org/wiki/Ising_model) or [Potts](https://en.wikipedia.org/wiki/Potts_model) models based on correlation data from a variety of biological and artificial systems. This software makes use of the **A**daptive **C**luster **E**xpansion (ACE) algorithm.
+ACE is a software package designed to quickly and accurately infer [Ising](https://en.wikipedia.org/wiki/Ising_model) or [Potts](https://en.wikipedia.org/wiki/Potts_model) models based on correlation data from a variety of biological and artificial systems. This software makes use of the <b>A</b>daptive <b>C</b>luster <b>E</b>xpansion (ACE) algorithm.
 
 Given a set of correlation data or sequence input in [FASTA](http://en.wikipedia.org/wiki/FASTA_format) format, ACE will produce a Ising or Potts model that reproduces the input correlations to within the expected error due to finite sampling.
+
+<b>NOTE:</b> Mathematical expressions through MathJax are currently not supported on GitHub. To see these expressions rendered properly, please see `README.pdf`.
 
 
 # Installation
@@ -87,7 +92,7 @@ The final line of `examples/p7-out.sce` should then appear something like:
 
 >1.338016e-05	3.641289e-01	1.674574e-01	9.498217e-01	1.169706e+01	6	20293	4773
 
-The error for the Potts parameters is low (the error terms $\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<1$), but we can follow this initial inference step by running the **M**onte **C**arlo (MC) learning algorithm to ensure convergence. This is particularly useful when convergence is difficult to obtain in the cluster algorithm alone. Typically we find that MC learning is more likely to be successful when the entropy has nearly converged (see column 6 in `examples/p7-out.sce`).
+The error for the Potts parameters is low (the error terms $\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<1$), but we can follow this initial inference step by running the <b>M</b>onte <b>C</b>arlo (MC) learning algorithm to ensure convergence. This is particularly useful when convergence is difficult to obtain in the cluster algorithm alone. Typically we find that MC learning is more likely to be successful when the entropy has nearly converged (see column 6 in `examples/p7-out.sce`).
 
 
 ### Running the MC learning algorithm QLS
