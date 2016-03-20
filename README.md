@@ -190,3 +190,6 @@ Note that the output correlations from this program include not just the input o
 
 4. [Barton, J. and Cocco, S. (2013). Ising models for neural activity inferred via selective cluster expansion: structural and coding properties. <i>Journal of Statistical Mechanics: Theory and Experiment</i>, <b>2013</b>(03), P03002][4].
 [4]: http://iopscience.iop.org/1742-5468/2013/03/P03002
+
+
+> Written with [StackEdit](https://stackedit.io/).
