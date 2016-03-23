@@ -181,7 +181,7 @@ Note that the output correlations from this program include not just the input o
 
 # References
 
-1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>bioRxiv</i>, doi:http://dx.doi.org/10.1101/044677.][1]
+1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>bioRxiv</i>, doi:http://dx.doi.org/10.1101/044677][1].
 [1]: http://dx.doi.org/10.1101/044677
  
 2. [Cocco, S. and Monasson, R. (2011). Adaptive Cluster Expansion for Inferring Boltzmann Machines with Noisy Data. <i>Physical Review Letters</i>, <b>106</b>, 090601][2].
