@@ -134,8 +134,8 @@
 % WriteCMSA('fasta','PF00014-alignment.faa',0.2,'frequency',0.05,'cons',1);
 %
 % HIV protein p7 ("examples/p7-alignment.fasta")
-% reweighting=0, entropy reduction, S0=0.9, no gap substitution, gauge cons
-% WriteCMSA('fasta','p7-alignment.fasta',0,'entropy',0.9,'cons',0);
+% reweighting=0, entropy reduction, S0=0.9, gap substitution, gauge cons
+% WriteCMSA('fasta','p7-alignment.fasta',0,'entropy',0.9,'cons',1);
 %
 % Cortical neuron recording ()
 
@@ -221,8 +221,8 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
 
 
     % reweight the alignment with the parameter theta
-    % reweighting with C++ mexfile if the alignment is bigger than 200
-    % sequences.
+    % reweighting with C++ mexfile if the alignment is bigger
+    % than 200 sequences.
     % % to comment after the first run
     % mex weightCalculator.c
 
@@ -244,11 +244,11 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     w = W'/Meff;
 
     disp(['Effective number of sequences is B=',num2str(Meff),'.'])
-
     toc
 
+
     % alignment msa21 for N*21 sites
-    msa21=zeros(M,N*q);
+    msa21 = zeros(M,N*q);
     for i=1:N;
         for a=1:q;  %a.a. are labeled from 1 to q
             msa21(:,(i-1)*q+a) = (align(:,i)==a);
@@ -258,7 +258,7 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     p = sum(msa21)/M; % p = frequency of amino acid at site i
     p2c = reshape(p,q,N);
  
-    [pmax,indcon]=max(p2c);
+    [pmax,indcon] = max(p2c);
  
     if (strcmp(gauge,'wt'));
         indgauge = load('wt.dat');
@@ -267,7 +267,7 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     elseif (strcmp(gauge,'group'));
         indgauge = zeros(1,N);
     else
-        indpmin=zeros(1,N);
+        indpmin = zeros(1,N);
         for i=1:N
             indnz = find(p2c(:,i)>redcut);
             [pmin(i),indpmin(i)] = min(p2c(indnz,i));
@@ -300,7 +300,7 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     % probabilities
     % msacut: matrix with only selected states
 
-    msacut=zeros(M,qt(N+1));
+    msacut = zeros(M,qt(N+1));
     for i=1:N
         if (strcmp(gauge,'group'))
             msacut(:,qt(i)+1:qt(i)+qng(i)) = msa21(:,ind(qtng(i)+1:qtng(i)+qng(i))');
@@ -327,13 +327,24 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     % reweighted probabilities
     pw = sum(msacut.*wm);
     pm = repmat(pw,[M,1]);
- 
+    
     % substraction of the mean to the probabilities
-    dq = msacut-pm;
+
+    dq = sparse(msacut-pm);
+    ww = spdiags(w,0,M,M);
+    csp = dq'*ww*dq;
+    c = full(csp); % c: reweighted correlation matrix
  
-    % c: reweighted correlation matrix
-    ww = diag(w);
-    c = dq'*ww*dq;
+%     % substraction of the mean to the probabilities
+%     dq = msacut-pm;
+%  
+%     % c: reweighted correlation matrix
+%     if(theta>0)
+%         ww = diag(w);
+%         c = dq'*ww*dq;
+%     else
+%         c = (dq'*dq)./M;
+%     end
     
     toc
     
@@ -761,6 +772,6 @@ function x=letter2number(a)
 %            x=20;
 %        end
     
+    
     end
-
 end
