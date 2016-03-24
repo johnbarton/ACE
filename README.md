@@ -147,6 +147,7 @@ Note that the output correlations from this program include not just the input o
 - `-mcr` gives the number of independent Monte Carlo trajectories to use when estimating the inference error (default: 1)
 - `-g2` sets the $L_2$-norm regularization strength (note that a natural value for this parameter is $1/B$, where $B$ is the number of samples used to generate the input correlations, default: 0)
 - `-ag` automatically sets the $L_2$-norm regularization strength equal to $1/B$, using the number of samples $B$ passed with the `-b` option
+- `-gi` enable the alternate gauge-invariant form of the $L_2$ regularization for couplings (see [here][1] for details) 
 
 ### Additional ACE options
 
