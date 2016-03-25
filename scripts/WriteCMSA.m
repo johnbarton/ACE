@@ -26,6 +26,8 @@
 % system (multi-sequence alignment for proteins) and constructs the outputs
 % necessary for the ACE algorithm and generative tests of the inferred model.
 %
+% NOTE: For neural recordings, use WriteCMSAbin.m instead.
+%
 %
 % List of inputs:
 %
@@ -76,7 +78,7 @@
 %   corresponding to this choice as the wild-type ("wt").
 %
 %
-% Outputs:
+% List of outputs:
 %
 % -filename.p
 %   The frequencies and pairwise correlations required as input for ace.
@@ -92,6 +94,9 @@
 %   after the reweighting procedure, used by qgt.
 %
 % - filename.errj
+%   The approximate errors on couplings in the inference gauge.
+%
+% -filename.dhdj (optional, need to uncomment lines below to print)
 %   The elementary variance of the inferred parameters in the same format
 %   as the correlations (".p" file).
 %   Error propagation is needed to calculate error bars in other gauges.
@@ -137,7 +142,8 @@
 % reweighting=0, entropy reduction, S0=0.9, gap substitution, gauge cons
 % WriteCMSA('fasta','p7-alignment.fasta',0,'entropy',0.9,'cons',1);
 %
-% Cortical neuron recording ()
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     disp('Reading the alignment and reweighting...')
@@ -514,264 +520,267 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
     
     toc
 
-%Function which builds the indices of the reduced alphabet
-function[qa,qng,ind,qout,indout,cons] = colorreduction(redmethod,redcut,q,p2c,N,indgauge,indmax)
-    
-    %ind gives the entries of the selected a.a. in the 21*N vector
-    %indout = the a.a. grouped in the gauge state
-    %build ind on the first sites
-    %redmethod='frequency'
-    %indmax=indcon;
- 
-    ind = [];
-    indout = [];
-    
-    % entropy reduction
-    if(strcmp(redmethod,'entropy'));
-        S_ia = min(-p2c.*log(p2c),p2c~=0);
-        S = sum(S_ia);
-        [A,sorted] = sort(S_ia,'descend');
-        qnonzero = zeros(N,1);
-        cons = zeros(N,1);
- 
-        for ii=1:1;
-            qnonzero(ii) = size(find(A(:,ii)),1);
-            Sred = 0;
-            Sreds = 0;
-            k = 0;
 
-            while((k<1)||(Sred/S(ii)<redcut))
-                k = k+1;
-                Sreds = Sreds+min(-p2c(sorted(k,ii),ii).*log(p2c(sorted(k,ii),ii)),p2c(sorted(k,ii),ii)~=0);
-                pout = sum(p2c(sorted(k+1:qnonzero(ii),ii),ii));
-                Sredr = min(-pout.*log(pout),pout~=0);
-                Sred = Sreds+Sredr;
-            end
-            
-            indt1 = sorted(1:k,ii);
-            indoutt = sorted(k+1:qnonzero(ii),ii);
-            indt = indt1(indt1~=indgauge(ii));
-            cons(ii) = sum(find(indt==indmax(ii)));
-            indoutt = indoutt(indoutt~=indgauge(ii));
-        end
- 
-        qa = zeros(1,N);
-        qout = zeros(N,1);
-        qng = zeros(1,N);
-        qng(1) = size(indt,1);
-        qout(1) = size(indoutt,1);
-        ind = indt(1:qng(1));
-        indout = indoutt(1:qout(1));
- 
-        if(qout(1)>0);
-            qa(1) = qng(1)+1;
-        else
-            qa(1) = qng(1);
-        end
- 
-        %build ind on other sites
-        for ii=2:N;
-            qnonzero(ii) = size(find(A(:,ii)),1);
-            Sred = 0;
-            Sreds = 0;
-            k = 0;
-            
-            while((k<1)||(Sred/S(ii)<redcut))
-                k = k+1;
-                Sreds = Sreds+min(-p2c(sorted(k,ii),ii).*log(p2c(sorted(k,ii),ii)),p2c(sorted(k,ii),ii)~=0);
-                pout = sum(p2c(sorted(k+1:qnonzero(ii),ii),ii));
-                Sredr = min(-pout.*log(pout),pout~=0);
-                Sred = Sreds+Sredr;
-            end
- 
-            indt1 = sorted(1:k,ii);
-            indoutt = sorted(k+1:qnonzero(ii),ii);
-            indt = indt1(indt1~=indgauge(ii));
-            cons(ii) = sum(find(indt==indmax(ii)));
-            indoutt = indoutt(indoutt~=indgauge(ii));
-            qout(ii) = size(indoutt,1);
-            qng(ii) = size(indt,1);
-            indt2 = indt(1:qng(ii))+(ii-1)*q;
-            
-            if(qng(ii)>0)
-                ind = [ind;indt2];
-            end
+    %Function which builds the indices of the reduced alphabet
+
+    function[qa,qng,ind,qout,indout,cons] = colorreduction(redmethod,redcut,q,p2c,N,indgauge,indmax)
+        
+        %ind gives the entries of the selected a.a. in the 21*N vector
+        %indout = the a.a. grouped in the gauge state
+        %build ind on the first sites
+        %redmethod='frequency'
+        %indmax=indcon;
+     
+        ind = [];
+        indout = [];
+        
+        % entropy reduction
+        if(strcmp(redmethod,'entropy'));
+            S_ia = min(-p2c.*log(p2c),p2c~=0);
+            S = sum(S_ia);
+            [A,sorted] = sort(S_ia,'descend');
+            qnonzero = zeros(N,1);
+            cons = zeros(N,1);
+     
+            for ii=1:1;
+                qnonzero(ii) = size(find(A(:,ii)),1);
+                Sred = 0;
+                Sreds = 0;
+                k = 0;
+
+                while((k<1)||(Sred/S(ii)<redcut))
+                    k = k+1;
+                    Sreds = Sreds+min(-p2c(sorted(k,ii),ii).*log(p2c(sorted(k,ii),ii)),p2c(sorted(k,ii),ii)~=0);
+                    pout = sum(p2c(sorted(k+1:qnonzero(ii),ii),ii));
+                    Sredr = min(-pout.*log(pout),pout~=0);
+                    Sred = Sreds+Sredr;
+                end
                 
-            indoutt2 = indoutt(1:qout(ii))+(ii-1)*q;
-
-            if(qout(ii)>0);
-                qa(ii) = qng(ii)+1;
-                indout = [indout;indoutt2];
-            else
-                qa(ii) = qng(ii);
+                indt1 = sorted(1:k,ii);
+                indoutt = sorted(k+1:qnonzero(ii),ii);
+                indt = indt1(indt1~=indgauge(ii));
+                cons(ii) = sum(find(indt==indmax(ii)));
+                indoutt = indoutt(indoutt~=indgauge(ii));
             end
-        
-        end
- 
-    % frequency reduction
-    else
-        cons = zeros(1,N);
-        indt1 = find((p2c(:,1)>redcut));
-        indt = indt1(indt1~=indgauge(1));
-        cons(1) = sum(find(indt==indmax(1)));
- 
-        indoutt = find((p2c(:,1))&(p2c(:,1)<=redcut));
-        indoutt = indoutt(indoutt~=indgauge(1));
- 
-        % qa: number of potts states at each site taking into account
-        % grouped state (last potts state)
-        % qng number of non-grouped potts states at each site
-        qa = zeros(1,N);
-        qout = zeros(1,N);
-        qng = zeros(1,N);
-        
-        %first site
-        qng(1) = size(indt,1);
-        qout(1) = size(indoutt,1);
-        ind = indt(1:qng(1));
-        indout = indoutt(1:qout(1));
- 
-        if(qout(1)>0);
-            qa(1)=qng(1)+1;
+     
+            qa = zeros(1,N);
+            qout = zeros(N,1);
+            qng = zeros(1,N);
+            qng(1) = size(indt,1);
+            qout(1) = size(indoutt,1);
+            ind = indt(1:qng(1));
+            indout = indoutt(1:qout(1));
+     
+            if(qout(1)>0);
+                qa(1) = qng(1)+1;
+            else
+                qa(1) = qng(1);
+            end
+     
+            %build ind on other sites
+            for ii=2:N;
+                qnonzero(ii) = size(find(A(:,ii)),1);
+                Sred = 0;
+                Sreds = 0;
+                k = 0;
+                
+                while((k<1)||(Sred/S(ii)<redcut))
+                    k = k+1;
+                    Sreds = Sreds+min(-p2c(sorted(k,ii),ii).*log(p2c(sorted(k,ii),ii)),p2c(sorted(k,ii),ii)~=0);
+                    pout = sum(p2c(sorted(k+1:qnonzero(ii),ii),ii));
+                    Sredr = min(-pout.*log(pout),pout~=0);
+                    Sred = Sreds+Sredr;
+                end
+     
+                indt1 = sorted(1:k,ii);
+                indoutt = sorted(k+1:qnonzero(ii),ii);
+                indt = indt1(indt1~=indgauge(ii));
+                cons(ii) = sum(find(indt==indmax(ii)));
+                indoutt = indoutt(indoutt~=indgauge(ii));
+                qout(ii) = size(indoutt,1);
+                qng(ii) = size(indt,1);
+                indt2 = indt(1:qng(ii))+(ii-1)*q;
+                
+                if(qng(ii)>0)
+                    ind = [ind;indt2];
+                end
+                    
+                indoutt2 = indoutt(1:qout(ii))+(ii-1)*q;
+
+                if(qout(ii)>0);
+                    qa(ii) = qng(ii)+1;
+                    indout = [indout;indoutt2];
+                else
+                    qa(ii) = qng(ii);
+                end
+            
+            end
+     
+        % frequency reduction
         else
-            qa(1)=qng(1);
-        end
-        
-        %build ind on other sites
-        for ii=2:N
-            indt1 = find((p2c(:,ii)>redcut));
-            indt = indt1(indt1~=indgauge(ii));
-            cons(ii) = sum(find(indt==indmax(ii)));
-            qng(ii) = size(indt,1);
-            indt2 = indt(1:qng(ii))+(ii-1)*q;
- 
-            if(qng(ii)>0)
-                ind = [ind;indt2];
-            end
+            cons = zeros(1,N);
+            indt1 = find((p2c(:,1)>redcut));
+            indt = indt1(indt1~=indgauge(1));
+            cons(1) = sum(find(indt==indmax(1)));
+     
+            indoutt = find((p2c(:,1))&(p2c(:,1)<=redcut));
+            indoutt = indoutt(indoutt~=indgauge(1));
+     
+            % qa: number of potts states at each site taking into account
+            % grouped state (last potts state)
+            % qng number of non-grouped potts states at each site
+            qa = zeros(1,N);
+            qout = zeros(1,N);
+            qng = zeros(1,N);
             
-            indoutt = find((p2c(:,ii))&(p2c(:,ii)<=redcut));
-            indoutt = indoutt(indoutt~=indgauge(ii));
-            qout(ii) = size(indoutt,1);
-            indoutt2 = indoutt(1:qout(ii))+(ii-1)*q;
-
-            if(qout(ii)>0);
-                qa(ii) = qng(ii)+1;
-                indout = [indout;indoutt2];
+            %first site
+            qng(1) = size(indt,1);
+            qout(1) = size(indoutt,1);
+            ind = indt(1:qng(1));
+            indout = indoutt(1:qout(1));
+     
+            if(qout(1)>0);
+                qa(1)=qng(1)+1;
             else
-                qa(ii) = qng(ii);
+                qa(1)=qng(1);
+            end
+            
+            %build ind on other sites
+            for ii=2:N
+                indt1 = find((p2c(:,ii)>redcut));
+                indt = indt1(indt1~=indgauge(ii));
+                cons(ii) = sum(find(indt==indmax(ii)));
+                qng(ii) = size(indt,1);
+                indt2 = indt(1:qng(ii))+(ii-1)*q;
+     
+                if(qng(ii)>0)
+                    ind = [ind;indt2];
+                end
+                
+                indoutt = find((p2c(:,ii))&(p2c(:,ii)<=redcut));
+                indoutt = indoutt(indoutt~=indgauge(ii));
+                qout(ii) = size(indoutt,1);
+                indoutt2 = indoutt(1:qout(ii))+(ii-1)*q;
+
+                if(qout(ii)>0);
+                    qa(ii) = qng(ii)+1;
+                    indout = [indout;indoutt2];
+                else
+                    qa(ii) = qng(ii);
+                end
+                
             end
             
         end
         
-    end
-    
-    if(max(indgauge(:))==0);
-        qa = qng;
-    end
-
-end
-
-
-% Auxiliary function
-
-function x=letter2number(a)
-    switch(a)
-        case '-'
-            x=1;
-        case 'A'
-            x=2;
-        case 'C'
-            x=3;
-        case 'D'
-            x=4;
-        case 'E' 
-            x=5;
-        case 'F'
-            x=6;
-        case 'G' 
-            x=7;
-        case 'H'
-            x=8;
-        case 'I' 
-            x=9;
-        case 'K'
-            x=10;
-        case 'L' 
-            x=11;
-        case 'M'
-            x=12;
-        case 'N' 
-            x=13;
-        case 'P'
-            x=14;
-        case 'Q'
-            x=15;
-        case 'R'
-            x=16;
-        case 'S' 
-            x=17;
-        case 'T'
-            x=18;
-        case 'V'
-            x=19;
-        case 'W'
-            x=20;
-        case 'Y'
-            x=21;
-        otherwise
-            x=1;
+        if(max(indgauge(:))==0);
+            qa = qng;
         end
 
-% For the lattice protein case we have used a different alphabet, which is
-% the following, the only difference is the order of the Potts states in the
-% input .p file
-% Alphabet used in the lattice protein model
-
-%function x=letter2number(a)
-%    % full AA alphabet
-%    switch(a)
-%        case 'C'
-%            x=1;
-%        case 'M'
-%            x=2;
-%        case 'F'
-%            x=3;
-%        case 'I'
-%            x=4;
-%        case 'L'
-%            x=5;
-%        case 'V'
-%            x=6;
-%        case 'W'
-%            x=7;
-%        case 'Y'
-%            x=8;
-%        case 'A'
-%            x=9;
-%        case 'G'
-%            x=10;
-%        case 'T'
-%            x=11;
-%        case 'S'
-%            x=12;
-%        case 'N'
-%            x=13;
-%        case 'Q'
-%            x=14;
-%        case 'D'
-%            x=15;
-%        case 'E'
-%            x=16;
-%        case 'H'
-%            x=17;
-%        case 'R'
-%            x=18;
-%        case 'K'
-%            x=19;
-%        case 'P'
-%            x=20;
-%        end
-    
-    
     end
+
+
+    % Auxiliary function
+
+    function x=letter2number(a)
+        switch(a)
+            case '-'
+                x=1;
+            case 'A'
+                x=2;
+            case 'C'
+                x=3;
+            case 'D'
+                x=4;
+            case 'E' 
+                x=5;
+            case 'F'
+                x=6;
+            case 'G' 
+                x=7;
+            case 'H'
+                x=8;
+            case 'I' 
+                x=9;
+            case 'K'
+                x=10;
+            case 'L' 
+                x=11;
+            case 'M'
+                x=12;
+            case 'N' 
+                x=13;
+            case 'P'
+                x=14;
+            case 'Q'
+                x=15;
+            case 'R'
+                x=16;
+            case 'S' 
+                x=17;
+            case 'T'
+                x=18;
+            case 'V'
+                x=19;
+            case 'W'
+                x=20;
+            case 'Y'
+                x=21;
+            otherwise
+                x=1;
+        end
+        
+    end
+
+    % For the lattice protein case we have used a different alphabet, which is
+    % the following, the only difference is the order of the Potts states in the
+    % input .p file
+    % Alphabet used in the lattice protein model
+
+%    function x=letter2number(a)
+%        % full AA alphabet
+%        switch(a)
+%            case 'C'
+%                x=1;
+%            case 'M'
+%                x=2;
+%            case 'F'
+%                x=3;
+%            case 'I'
+%                x=4;
+%            case 'L'
+%                x=5;
+%            case 'V'
+%                x=6;
+%            case 'W'
+%                x=7;
+%            case 'Y'
+%                x=8;
+%            case 'A'
+%                x=9;
+%            case 'G'
+%                x=10;
+%            case 'T'
+%                x=11;
+%            case 'S'
+%                x=12;
+%            case 'N'
+%                x=13;
+%            case 'Q'
+%                x=14;
+%            case 'D'
+%                x=15;
+%            case 'E'
+%                x=16;
+%            case 'H'
+%                x=17;
+%            case 'R'
+%                x=18;
+%            case 'K'
+%                x=19;
+%            case 'P'
+%                x=20;
+%        end
+%    end
+    
 end
