@@ -4,4 +4,4 @@ compiler:
   - gcc
 before_install:
   - autoreconf
-install: ./configure && make && make check
+script: ./configure && make && make check
