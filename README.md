@@ -2,7 +2,7 @@
 src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-[![Build Status](https://travis-ci.org/johnbarton/ACE.svg?branch=master)](https://travis-ci.org/johnbarton/ACE)
+#### ACE [![Build Status](https://travis-ci.org/johnbarton/ACE.svg?branch=master)](https://travis-ci.org/johnbarton/ACE)
 
 # Table of contents
 
