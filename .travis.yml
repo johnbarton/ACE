@@ -2,3 +2,5 @@ language: cpp
 compiler:
   - clang
   - gcc
+before_install:
+  - ./fix-automake.sh
