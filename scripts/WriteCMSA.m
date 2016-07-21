@@ -13,9 +13,9 @@
 %
 % Any publications resulting from applications of ACE should cite:
 %
-% J P Barton, E de Leonardis, A Coucke, and S Cocco (2015)
+% J P Barton, E de Leonardis, A Coucke, and S Cocco (2016)
 % ACE: adaptive cluster expansion for maximum entropy
-% graphical model inference
+% graphical model inference. Bioinformatics.
 % and 
 % S Cocco and R Monasson (2011). Adaptive Cluster Expansion for 
 % Inferring Boltzmann Machines with Noisy Data. Physical Review 
@@ -58,6 +58,10 @@
 %
 % -redcut (real number >= 0, <=1)
 %   Reduction threshold: if 0 only states which are never observed are removed.
+%   If reduction is according to frequency, this is the minimum frequency that an AA
+%   must have in order to be included explicitly as a Potts state. If reduction is
+%   according to entropy, the number of states at each site will be chosen in order
+%   to capture at least this fraction of the total single site entropy.
 %
 % -gapred (0 or 1)
 %   When gapred=1, gaps in the alignment are replaced with other a.a. according
@@ -66,7 +70,7 @@
 %   NOTE: this replacement is stochastic, so the resulting set of correlations
 %   will not always be identical when this option is used.
 %
-% -gaugechoice (string: "least", "cons", "wt", "group"),
+% -gauge (string: "least", "cons", "wt", "group"),
 %   Choice of the gauge state for writing out the correlations.
 %   "least": The least frequent a.a. at each site.
 %   "cons": The consensus a.a.
