@@ -60,7 +60,7 @@ In other words, the first $N$ lines of the file record the frequency that each s
 
 These values should be given in floating point or scientific format, with whitespace (e.g. `'\t'`) between successive values and a newline character (`'\n'`) at the end of each line. In order for the correlations to be read in properly, there should be **no** whitespace between the final correlation value and the newline character on each line. 
 
- For examples, see the `examples/` directory. Instructions on how to automatically generate correlations from a sequence alignment in FASTA format (and others) can be found in the Matlab file in the `scripts/` directory.
+For examples, see the `examples/` directory. Instructions on how to automatically generate correlations from a sequence alignment in FASTA format (and others) can be found in the Matlab file in the `scripts/` directory. The correlations can also be prepared through a set of Python scripts, `scripts/ACEtools.py`, which also includes useful auxiliary functions.
 
 
 # Running the program
