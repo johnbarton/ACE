@@ -140,9 +140,14 @@ def getaaq(filein, out='', saveS=False, removeSingular=True, removeConsGap=0.0, 
     - savep3            If true, write out three-point correlations
     """
 
-    # Read in sequences
+    # Read in sequences, verify all have the same length
     
     msa, tag = getmsa(filein, convert=convert, noArrow=True)
+    
+    lengths    = [len(s) for s in msa]
+    lmin, lmax = np.min(lengths), np.max(lengths)
+    
+    assert lmin==lmax, "Error: Sequences are of different lengths. Realign the MSA to ensure equal lengths for all sequences."
     
     # Compute insertion/deletion frequency
 
