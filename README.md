@@ -135,6 +135,17 @@ This program also gives the RMS error and Pearson correlation between the model 
 
 Note that the output correlations from this program include not just the input ones, but also the ones corresponding to the "gauged" states, which are implicit in the input data. We also note that by default the output of small three-point correlations is trimmed in order to prevent generating extremely large files. For more information, see the options below.
 
+# Troubleshooting
+
+On difficult data sets (for example, systems of very large size, those with many states, and/or high variability), ACE may be more slow to converge. Below are a few common potential problems and suggestions for how to fix them.
+
+**The one- and two-point error terms have converged ($\epsilon\leq 1$), but the maximum error remains $> 1$.** Obtaining a normalized maximum error $< 1$ is the most stringent statistical check of the inferred model performed by the ACE and QLS routines. It is possible to obtain a very good generative model of the data even in cases where this error is larger than 1 -- use QGT to verify an acceptable fit.
+
+**The entropy is oscillating.** Large oscillations of the entropy can be observed when whole collections of variables strongly interact. One common source is strongly-correlated gaps at the beginning and end of sequences from protein families. In such cases, filling in gaps while computing the correlations, using stronger compression, or increasing the regularization strength can help to reduce oscillations and improve convergence.
+
+**ACE slows down as the size of clusters increases.** This can occur if the number of states is very large. Stronger compression can allow the cluster expansion algorithm to proceed further. In addition, QLS can often converge rapidly after the network of strong interactions has been inferred by ACE, even if the errors are high and ACE has not yet advanced to a low value of the threshold (see the lattice protein model [here][1] for an example).
+
+**Additional questions?** Please contact us for more information or advice on dealing with difficult data sets.
 
 # Command line options
 
@@ -147,7 +158,7 @@ Note that the output correlations from this program include not just the input o
 - `-b` tells the program how many samples were used to generate the input correlations, so that the expected error in the correlations due to finite sampling can be estimated (default: 1000)
 - `-mcb` gives the number of Monte Carlo steps used to estimate the inference error (default: 40000 (ace), 800000 (qls, qgt))
 - `-mcr` gives the number of independent Monte Carlo trajectories to use when estimating the inference error (default: 1)
-- `-g2` sets the $L_2$-norm regularization strength (note that a natural value for this parameter is $1/B$, where $B$ is the number of samples used to generate the input correlations, default: 0)
+- `-g2` sets the $L_2$-norm regularization strength (note that a natural value for this parameter is $1/B$, where $B$ is the number of samples used to generate the input correlations -- for contact prediction, it may be best to use strong regularization $\approx 1$, regardless of the number of samples, default: 0)
 - `-ag` automatically sets the $L_2$-norm regularization strength equal to $1/B$, using the number of samples $B$ passed with the `-b` option
 - `-gi` enable the alternate gauge-invariant form of the $L_2$ regularization for couplings (see [here][1] for details) 
 
@@ -184,8 +195,8 @@ Note that the output correlations from this program include not just the input o
 
 # References
 
-1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>bioRxiv</i>, doi:http://dx.doi.org/10.1101/044677][1].
-[1]: http://dx.doi.org/10.1101/044677
+1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>Bioinformatics</i>, doi:http://dx.doi.org/10.1093/bioinformatics/btw328][1].
+[1]: http://dx.doi.org/10.1093/bioinformatics/btw328
  
 2. [Cocco, S. and Monasson, R. (2011). Adaptive Cluster Expansion for Inferring Boltzmann Machines with Noisy Data. <i>Physical Review Letters</i>, <b>106</b>, 090601][2].
 [2]: http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.090601
