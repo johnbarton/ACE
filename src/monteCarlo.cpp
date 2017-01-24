@@ -64,7 +64,7 @@ double epsilonP2(const Vector &q, const Vector &p, int N, double maxPrecision, c
             NJeff++;
             
             double K         = J[idx][a];
-            double gradError = pow(p[idx][a] - q[idx][a] + (2 * gamma * K), 2.0);
+            double gradError = pow(q[idx][a] - p[idx][a] - (2 * gamma * K), 2.0);
     
             if (q[idx][a]<maxPrecision) err += gradError/(maxPrecision * (1 - maxPrecision));
             else                        err += gradError/(   q[idx][a] * (1 -    q[idx][a]));
@@ -116,7 +116,7 @@ double epsilonP2_GI(const Vector &q, const Vector &p, int N, double maxPrecision
 
             int    sab       = sindex(a,b,J[i].size(),J[j].size());
             double K         = J[idx][sab] - (suma[a] * inv_qj) - (sumb[b] * inv_qi) + (sumall * inv_qi * inv_qj);
-            double gradError = pow(p[idx][sab] - q[idx][sab] + (2 * gamma * K), 2.0);
+            double gradError = pow(q[idx][sab] - p[idx][sab] - (2 * gamma * K), 2.0);
     
             if (q[idx][sab]<maxPrecision) err += gradError/(maxPrecision * (1 - maxPrecision));
             else                          err += gradError/( q[idx][sab] * (1 - q[idx][sab]));
@@ -215,7 +215,7 @@ double epsilonC_GI(const Vector &q, const Vector &p, int N, double maxPrecision,
 
 // Compute maximum error on the one- and two-point correlations (sparse)
 
-double getMaxError(const Vector &q, const Vector &p, const IntVector &nz, double maxPrecision) {
+double getMaxError_noreg(const Vector &q, const Vector &p, const IntVector &nz, double maxPrecision) {
 
     int    N        = sizetolength(q.size());
     double NJeff    = 0;
@@ -295,7 +295,7 @@ double getMaxError(const Vector &q, const Vector &p, double maxPrecision, const 
             NJeff++;
 
             double K         = J[idx][a];
-            double gradError = pow(p[idx][a] - q[idx][a] + (2 * gamma * K), 2.0);
+            double gradError = pow(q[idx][a] - p[idx][a] - (2 * gamma * K), 2.0);
     
             if (q[idx][a]<maxPrecision) gradError /= (1 - maxPrecision);
             else                        gradError /= (maxPrecision * q[idx][a] * (1 - q[idx][a]));
@@ -365,7 +365,7 @@ double getMaxError_GI(const Vector &q, const Vector &p, double maxPrecision, con
 
             int    sab       = sindex(a,b,J[i].size(),J[j].size());
             double K         = J[idx][sab] - (suma[a] * inv_qj) - (sumb[b] * inv_qi) + (sumall * inv_qi * inv_qj);
-            double gradError = pow(p[idx][sab] - q[idx][sab] + (2 * gamma * K), 2.0);
+            double gradError = pow(q[idx][sab] - p[idx][sab] - (2 * gamma * K), 2.0);
     
             if (q[idx][sab]<maxPrecision) gradError /= (1 - maxPrecision);
             else                          gradError /= (maxPrecision * q[idx][sab] * (1 - q[idx][sab]));
@@ -917,9 +917,9 @@ void getErrorMCLearn(const Vector &q, const Vector &J, Vector &expJ, double B, i
     
     for (int i=0;i<q.size();i++) { for (int j=0;j<q[i].size();j++) p[i][j] /= (double) (numThreads * numSteps * numRuns); }
         
-    error[0] = epsilonP(        q, p, N, maxPrecision, J, gamma, alpha);
-    error[1] = (*epsilonP2_ptr)(q, p, N, maxPrecision, J, gamma);
-    error[2] = (*getMaxError_ptr)( q, p, maxPrecision, J, gamma, alpha);
+    error[0] = epsilonP(       q, p, N, maxPrecision, J, gamma, alpha);
+    error[1] = (*epsilonC_ptr)(q, p, N, maxPrecision, J, gamma);
+    error[2] = (*getMaxError_ptr)(q, p, maxPrecision, J, gamma, alpha);
 
 }
 
