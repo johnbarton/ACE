@@ -24,6 +24,9 @@ import numpy as np
 # Compute energy of the first sequence in the MSA                                   #
 # > E = getE(h, J, smap, msa[0])                                                    #
 #                                                                                   #
+# Convert couplings from consensus to zero sum gauge (e.g. for contact prediction)  #
+# > J_ZS = consensus2zerosum(h, J)                                                  #
+#                                                                                   #
 #####################################################################################
 
 
@@ -845,6 +848,58 @@ def getE(h, J, smap, seq, passframeshift=False, passGaps=False, passX=False):
 
 
 # Accessory functions
+
+
+def consensus2zerosum(h, J):
+    """
+    Return a set of couplings in the zero sum gauge, given input in the consensus gauge.
+    """
+    
+    N    = len(h)
+    q    = np.array([len(i)          for i in h])
+    invq = np.array([1./(float(i)+1) for i in q],float)
+    newJ = []
+
+    for i, j in pairs(N):
+        idx   = index(i,j,N)
+        tempJ = []
+        
+        # Get values for converting to new gauge
+        
+        suma = np.zeros(q[i])
+        sumb = np.zeros(q[j])
+        for a in range(q[i]):
+            for b in range(q[j]):
+                suma[a] += J[idx][sindex(a,b,q[i],q[j])]
+                sumb[b] += J[idx][sindex(a,b,q[i],q[j])]
+        sumall = np.sum(suma)
+
+        # Compute zero sum gauge couplings and store in the new vector
+
+        for a in range(q[i]):
+            for b in range(q[j]):
+                sab = sindex(a,b,q[i],q[j])
+                K   = J[idx][sab] - (suma[a] * invq[j]) - (sumb[b] * invq[i]) + (sumall * invq[i] * invq[j])
+                tempJ.append(K)
+                
+            # Add couplings for gauge state (site j)
+            K = (sumall * invq[i] * invq[j]) - (suma[a] * invq[j])
+            tempJ.append(K)
+
+        # Add couplings for gauge state (site i)
+        for b in range(q[j]):
+            K = (sumall * invq[i] * invq[j]) - (sumb[b] * invq[i])
+            tempJ.append(K)
+
+        # Add double gauge state coupling
+        K = sumall * invq[i] * invq[j]
+        tempJ.append(K)
+
+        newJ.append(np.array(tempJ))
+
+    # Return new vector J in zero sum gauge
+
+    return newJ
 
 
 def index(i,j,N):
