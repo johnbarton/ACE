@@ -25,6 +25,7 @@ public:
 	double dS;
 	Vector dJ;
     bool selected;
+    bool superSelected;
 	
 	Cluster() {}
     Cluster(int size) {
@@ -32,6 +33,7 @@ public:
 		dS = 0;
         dJ.resize((size * (size + 1)) / 2);
         selected = false;
+        superSelected = false;
         
     }
     ~Cluster() {}
@@ -92,43 +94,48 @@ public:
     bool useCmap;           // If true, the inference is performed around the give contact map
     bool inputClusters;     // If true, select clusters from a given list and perform inference
     bool recClusters;       // If true, save the list of cluster selected at convergence in a .wuss file
+    bool recClusterCover;   // If true, record all selected clusters that are not subsets of
+                            // other selected clusters in a file ending in -co.dat
     bool useVerbose;        // If true, print extra information while program is running
     bool useVeryVerbose;    // If true, use very verbose output
 
     
     RunParameters() {
         
-        directory=".";
-        infile="input";
-        ssinfile="input";
-        outfile="output";
+        directory = ".";
+        infile    = "input";
+        ssinfile  = "input";
+        outfile   = "output";
         
-        kmin=0;
-        kmax=0;
-        sampleB=1000;
-        gamma0=1.0e-4;
-        gamma2=0.0;
-        thetaMin=1.0e-10;
-        thetaMax=1.0e+0;
-        thetaStep=1.05;
-        recordStep=0;
-        b=40000;
-        runs=1;
-        useGI=false;
-        computeGamma=false;
-        useLax=false;
-        useRef=false;
-        useSparse=false;
-        useCmap=false;
-        inputClusters=false;
-        recClusters=false;
-        useVerbose=false;
-        useVeryVerbose=false;
+        kmin       = 0;
+        kmax       = 0;
+        sampleB    = 1000;
+        gamma0     = 1.0e-4;
+        gamma2     = 0.0;
+        thetaMin   = 1.0e-10;
+        thetaMax   = 1.0e+0;
+        thetaStep  = 1.05;
+        recordStep = 0;
+        b          = 40000;
+        runs       = 1;
+        
+        useGI           = false;
+        computeGamma    = false;
+        useLax          = false;
+        useRef          = false;
+        useSparse       = false;
+        useCmap         = false;
+        inputClusters   = false;
+        recClusters     = false;
+        recClusterCover = false;
+        useVerbose      = false;
+        useVeryVerbose  = false;
         
     }
     std::string getCorrelationsInfile()   { return (directory+"/"+infile+".p");       }
     std::string getSecStructInfile()      { return (directory+"/"+ssinfile+".cl");    }
     std::string getClusterOutfile()       { return (directory+"/"+outfile+".cl");     }
+    std::string getClusterCoverOutfile()  { return (directory+"/"+outfile+"-co.dat"); }
     std::string getCouplingsOutfile()     { return (directory+"/"+outfile+".j");      }
     std::string getBestCouplingsOutfile() { return (directory+"/"+outfile+"-best.j"); }
     std::string getOutfile_TH()           { return (directory+"/"+outfile);           }  // Theta recording files

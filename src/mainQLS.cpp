@@ -98,7 +98,7 @@
 
 int main(int argc, char *argv[]) {
     
-	RunParameters r;
+	RunParametersQLS r;
     
     // Process command line input
     

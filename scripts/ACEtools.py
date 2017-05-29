@@ -75,7 +75,7 @@ def WriteCMSA(filetype='fasta', filename='input', theta=0, redmethod='frequency'
                     according to entropy, the number of states at each site will be chosen in order
                     to capture at least this fraction of the total single site entropy.
 
-    -gauge          (string: "least", "cons", "group", or a file name),
+    - gauge         (string: "least", "cons", "group", or a file name),
                     Choice of the gauge state for writing out the correlations.
                     "least": The least frequent (non-grouped) AA at each site.
                     "cons": The consensus AA.
@@ -83,7 +83,7 @@ def WriteCMSA(filetype='fasta', filename='input', theta=0, redmethod='frequency'
                     The gauge can also be manually specified by placing here the name of a file 
                     containing a string with the gauge AA at each site.
     
-    -gapred         (0 or 1)
+    - gapred        (0 or 1)
                     When gapred=1, gaps in the alignment are replaced with other AA according
                     to the frequency of AA at the same site in other sequences (without gaps
                     at that site).
@@ -327,6 +327,8 @@ def getaaq(filein, out='', saveS=False, removeSingular=True, removeConsGap=0.0, 
         pn   += padd
 
     # If there is an output file, then print to file, else return info.
+    
+    print('Beff = %lf' % Beff)
     
     if out:
         fileout = out

@@ -10,7 +10,7 @@
 
 // This class holds the parameters needed for running the ising program
 
-class RunParameters {
+class RunParametersQLS {
     
 public:
     
@@ -39,7 +39,7 @@ public:
     
     bool useVerbose;        // If true, print extra information while program is running
     
-    RunParameters() {
+    RunParametersQLS() {
         
         directory=".";
         infile="input";
@@ -69,7 +69,7 @@ public:
     std::string getCorrelationsOutfile() { return (directory+"/"+outfile+".p");     }
     std::string getCouplingsOutfile()    { return (directory+"/"+outfile+".j");     }
     std::string getStartInfile()         { return (directory+"/"+startfile+".dat"); }
-    ~RunParameters() {}
+    ~RunParametersQLS() {}
     
 };
 
@@ -80,7 +80,7 @@ void updateStep_GI(const Vector &, const Vector &, const IntVector &, double, do
 bool isClose(double, double, double);
 bool isCloseC(double, double, double, double, double);
 void chop(Vector &);
-int runLearn(RunParameters &);
+int runLearn(RunParametersQLS &);
 
 
 #endif

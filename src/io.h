@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "tools.h"  // Numerical tools
+#include "tools.h"      // Numerical tools
 
 
 void getCorrelations(FILE *, Vector &);

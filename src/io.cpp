@@ -1,7 +1,8 @@
 #include <vector>
 
-#include "io.h"     // Data input and output
-#include "tools.h"  // Numerical tools
+#include "io.h"         // Data input and output
+#include "tools.h"      // Numerical tools
+#include "algorithm.h"  // Algorithm declarations
 
 
 // Read correlations and number of sites in from a file

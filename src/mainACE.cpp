@@ -41,17 +41,25 @@
     When the network of interactions (e.g. contact map) is known, a list
     of perselected 2-site clusters can be given. "string" represent the name 
     and the location of the file from which clusters are read. The extension 
-    of the file has to be .cl
+    of the file has to be .cl.
     
  -inputcl: string
     Default: none 
     When a list of interesting clusters (e.g. from previously runnings) is known,
     this list of perselected n-site clusters can be given and used for inference.
     "string" represent the name and the location of the file from which clusters are 
-    read. The extension of the file has to be .cl
+    read. The extension of the file has to be .cl.
  
  -cl: none
-    Print the list of selected clusters in a file .cl in the output folder
+    Print the list of selected clusters in a file .cl in the output folder.
+    
+ -co: none
+    Print the list of selected clusters that are not also subsets of selected
+    clusters. This list thus gives a minimal set of selected clusters that
+    contains all other selected clusters as subsets. In the output file, which
+    ends with -co.dat, the first column gives the value of delta S for the
+    cluster, while subsequent columns give the sites included in the cluster.
+    Each row represents one cluster.
 
  -b: real number
     Default: 1.0e+4
@@ -160,6 +168,7 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i],"-inputcl")==0) { if (++i==argc) break; else { r.inputClusters=true;
                                                                                r.ssinfile=argv[i];            } }
         else if (strcmp(argv[i],"-cl")==0)      { r.recClusters=true;                                           }
+        else if (strcmp(argv[i],"-co")==0)      { r.recClusterCover=true;                                       }
         
         // Cluster size and threshold cutoffs
         

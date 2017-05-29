@@ -53,9 +53,9 @@ void updateStep(const Vector &q, const Vector &p, const IntVector &nz, double ga
         if (fabs(K)>Jcut) newGrad += (alpha * gammaexp * sign(K) * exp(fabs(K))) - (2 * alpha * gamma * K);
             
         // Only perform step if correlation differs significantly from correct
-        if (isClose(q[i][a], newGrad, B)) weight[i][a] = 1;
-        
-        else {
+        //if (isClose(q[i][a], newGrad, B)) weight[i][a] = 1;
+        //
+        //else {
             
             // If new gradient has same sign, accelerate, else decelerate
             if      (grad[i][a] * newGrad >= 0) weight[i][a] *= STEPA;
@@ -68,7 +68,7 @@ void updateStep(const Vector &q, const Vector &p, const IntVector &nz, double ga
             
             J[i][a] -= newGrad * STEPS * weight[i][a];
             
-        }
+        //}
         
         expJ[i][a] = exp(J[i][a]);
         grad[i][a] = newGrad;
@@ -93,9 +93,9 @@ void updateStep(const Vector &q, const Vector &p, const IntVector &nz, double ga
             if (fabs(K)>Jcut) newGrad += (gammaexp * sign(K) * exp(fabs(K))) - (2 * gamma * K);
             
             // Only perform step if correlation differs significantly from correct
-            if (isClose(q[idx][sab], newGrad, B)) weight[idx][sab] = 1;
-            
-            else {
+            //if (isClose(q[idx][sab], newGrad, B)) weight[idx][sab] = 1;
+            //
+            //else {
     
                 // If new gradient has same sign, accelerate, else decelerate
                 if      (grad[idx][sab] * newGrad >= 0) weight[idx][sab] *= STEPA;
@@ -108,7 +108,7 @@ void updateStep(const Vector &q, const Vector &p, const IntVector &nz, double ga
             
                 J[idx][sab] -= newGrad * STEPS * weight[idx][sab];
             
-            }
+            //}
             
             expJ[idx][sab] = exp(J[idx][sab]);
             grad[idx][sab] = newGrad;
@@ -142,9 +142,9 @@ void updateStep_GI(const Vector &q, const Vector &p, const IntVector &nz, double
         if (fabs(K)>Jcut) newGrad += (alpha * gammaexp * sign(K) * exp(fabs(K))) - (2 * alpha * gamma * K);
             
         // Only perform step if correlation differs significantly from correct
-        if (isClose(q[i][a], newGrad, B)) weight[i][a] = 1;
-        
-        else {
+        //if (isClose(q[i][a], newGrad, B)) weight[i][a] = 1;
+        //
+        //else {
             
             // If new gradient has same sign, accelerate, else decelerate
             if      (grad[i][a] * newGrad >= 0) weight[i][a] *= STEPA;
@@ -157,7 +157,7 @@ void updateStep_GI(const Vector &q, const Vector &p, const IntVector &nz, double
             
             J[i][a] -= newGrad * STEPS * weight[i][a];
             
-        }
+        //}
         
         expJ[i][a] = exp(J[i][a]);
         grad[i][a] = newGrad;
@@ -203,9 +203,9 @@ void updateStep_GI(const Vector &q, const Vector &p, const IntVector &nz, double
             if (fabs(K)>Jcut) newGrad += (gammaexp * sign(K) * exp(fabs(K))) - (2 * gamma * K);
             
             // Only perform step if correlation differs significantly from correct
-            if (isClose(q[idx][sab], newGrad, B)) weight[idx][sab] = 1;
-            
-            else {
+            //if (isClose(q[idx][sab], newGrad, B)) weight[idx][sab] = 1;
+            //
+            //else {
     
                 // If new gradient has same sign, accelerate, else decelerate
                 if      (grad[idx][sab] * newGrad >= 0) weight[idx][sab] *= STEPA;
@@ -218,7 +218,7 @@ void updateStep_GI(const Vector &q, const Vector &p, const IntVector &nz, double
             
                 J[idx][sab] -= newGrad * STEPS * weight[idx][sab];
             
-            }
+            //}
             
             expJ[idx][sab] = exp(J[idx][sab]);
             grad[idx][sab] = newGrad;
@@ -281,7 +281,7 @@ void chop(Vector &J) {
 
 // Runs the main program
 
-int runLearn(RunParameters &r) {
+int runLearn(RunParametersQLS &r) {
 
     // Define variables
     

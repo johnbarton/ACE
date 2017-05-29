@@ -3,6 +3,7 @@
 
 
 #include <set>
+#include <map>
 
 #include "dataStructures.h" // Data structures
 #include "tools.h"          // Numerical tools

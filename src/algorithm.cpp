@@ -16,12 +16,12 @@
 
 // GLOBAL VARIABLES
 
-int    N=0;      // total number of spins
-double gamma0=0; // strength of the L0 regularization
-double gamma2=0; // strength of the L2 regularization
+int    N      = 0; // total number of spins
+double gamma0 = 0; // strength of the L0 regularization
+double gamma2 = 0; // strength of the L2 regularization
 
-int storageSize=8*sizeof(unsigned long); // number of spins which can be held in a single storage position of the key
-int keySize=0;                           // number of entries necessary on the key to hold information on all spins
+int storageSize = 8*sizeof(unsigned long); // number of spins which can be held in a single storage position of the key
+int keySize     = 0;                       // number of entries necessary on the key to hold information on all spins
 
 Vector correlations;                                                // the set of all single and pair correlations
 std::map<Key,Cluster> *clusterIndex = new std::map<Key,Cluster>();  // the set of all clusters
@@ -250,7 +250,7 @@ void makeCluster(Cluster &cluster, const Key &key, int clusterSize) {
     
 	// Compute values and assign them to the cluster
     
-    double dS=0;
+    double dS = 0;
     
     (*computeS0andJ0_ptr)(p,clusterSize,gamma2,dJ,dS);
     if (clusterSize>1) computeDSandDJ(spins,clusterSize,dJ,dS);
@@ -335,16 +335,16 @@ void selectClusters(std::set<Key> &clusters, int clusterSize, int spinCutSize, i
         
         for (int j=0;j<clusterSize;j++) {
         
-            if (spinMap.count(spins[j])==0) spinMap[spins[j]]=1;
-            else                            spinMap[spins[j]]+=1;
+            if (spinMap.count(spins[j])==0) spinMap[spins[j]]  = 1;
+            else                            spinMap[spins[j]] += 1;
         
             pair[0]=spins[j];
             
             for (int k=j+1;k<clusterSize;k++) {
             
                 pair[1]=spins[k];
-                if (pairMap.count(pair)==0) pairMap[pair]=1;
-                else                        pairMap[pair]+=1;
+                if (pairMap.count(pair)==0) pairMap[pair]  = 1;
+                else                        pairMap[pair] += 1;
                 
             }
             
@@ -546,23 +546,17 @@ void getClusters(std::set<Key> &clusters, int &maxClusterSize, int kmax, double 
 
 void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantClusters, double theta) {
 
+    Key subsetKey(keySize,0);
+
     for (std::map<Key,Cluster>::iterator i=(*clusterIndex).begin();i!=(*clusterIndex).end();++i) {
         
         Significant isSignificant(theta);
 		
 		if ( isSignificant((*i).second) ) {
+        
+            // Map cluster to the whole system
             
-            // Count the number of significant clusters
-            
-            numSignificantClusters++;
-            
-            // Add the cluster's contribution to dS
-            
-            finalS += (*i).second.dS;
-            
-            // Map the cluster to the whole system and add the contribution to dJ
-            
-            int clusterSize=sizetolength((*i).second.dJ.size());
+            int clusterSize = sizetolength((*i).second.dJ.size());
             int spins[clusterSize];
             
             int n=0;
@@ -572,6 +566,56 @@ void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantC
                 if ((*i).first[j] & (unsigned long) 1<<k) { spins[n] = storageSize * j + k; n++; }
                 
             } }
+        
+            // Check if cluster was not previously selected
+            
+            if (!(*i).second.selected) {
+            
+                (*i).second.selected = true;
+        
+                // Iterate through subclusters
+                
+                unsigned int numSubClusters = pow(2.0,clusterSize) - 2;
+                
+                int subset_mask[clusterSize];
+                subset_mask[0]=1;
+                for (int j=1;j<clusterSize;j++) subset_mask[j] = 0;
+	
+                for (unsigned int n=0;n<numSubClusters;n++) {
+		
+                    for (int j=0;j<keySize;j++) subsetKey[j] = 0;
+                
+                    int subsetSize = 0;
+                    for (int j=0;j<clusterSize;j++) { if (subset_mask[j]) {
+                
+                        subsetKey[spins[j]/storageSize] |= (unsigned long) 1 << (spins[j] % storageSize);
+                        subsetSize++;
+                
+                    } }
+                    
+                    // Mark as superSelected
+                    
+                    (*clusterIndex)[subsetKey].superSelected = true;
+                    
+                    // Iterate the subset mask
+		
+                    int j;
+                    for (j=0;j<clusterSize && subset_mask[j];j++) subset_mask[j] = 0;
+                    if (j<clusterSize) subset_mask[j]=1;
+                    
+                }
+                
+            }
+            
+            // Count the number of significant clusters
+            
+            numSignificantClusters++;
+            
+            // Add the cluster's contribution to dS
+            
+            finalS += (*i).second.dS;
+            
+            // Add the contribution to dJ
             
             for (int j=0;j<clusterSize;j++) {
             
@@ -720,8 +764,8 @@ int run(RunParameters &r) {
                 }
 
                 Cluster c((int)ss[i].size());
-                makeCluster(c,clusterKey,(int)ss[i].size());
-                c.selected=true;
+                makeCluster(c,clusterKey,(int) ss[i].size());
+                c.selected = true;
                 (*clusterIndex)[clusterKey]=c;
 
             }
@@ -815,6 +859,42 @@ int run(RunParameters &r) {
         fclose(infout);
         
         printSupplementaryOutput(supout, theta, error, finalS, maxClusterSize, numClusters, numSignificantClusters);
+        
+        if (r.recClusterCover) {
+        
+            FILE *cout = fopen(r.getClusterCoverOutfile().c_str(),"w");
+            
+            for (std::map<Key,Cluster>::iterator i=(*clusterIndex).begin();i!=(*clusterIndex).end();++i) {
+    
+                if ((*i).second.selected && !(*i).second.superSelected) {
+        
+                    // Map cluster to the whole system
+                    
+                    int clusterSize = sizetolength((*i).second.dJ.size());
+                    int spins[clusterSize];
+                    
+                    int n = 0;
+                    
+                    for (int j=0;j<keySize && n<clusterSize;j++) { for (int k=0;k<storageSize && n<clusterSize;k++) {
+                            
+                        if ((*i).first[j] & (unsigned long) 1<<k) { spins[n] = storageSize * j + k; n++; }
+                        
+                    } }
+                
+                    // Print cluster content
+                
+                    fprintf(cout,"%.6e\t",(*i).second.dS);
+                    for (int j=0;j<clusterSize;j++) fprintf(cout," %d",spins[j]);
+                    fprintf(cout,"\n");
+                    fflush(cout);
+                
+                }
+            
+            }
+            
+            fclose(cout);
+        
+        }
         
         // Find min error on correlations and record J and h
         
