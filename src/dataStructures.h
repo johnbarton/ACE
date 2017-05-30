@@ -135,7 +135,7 @@ public:
     std::string getCorrelationsInfile()   { return (directory+"/"+infile+".p");       }
     std::string getSecStructInfile()      { return (directory+"/"+ssinfile+".cl");    }
     std::string getClusterOutfile()       { return (directory+"/"+outfile+".cl");     }
-    std::string getClusterCoverOutfile()  { return (directory+"/"+outfile+"-co.dat"); }
+    std::string getClusterCoverOutfile()  { return (directory+"/"+outfile+"-cc.dat"); }
     std::string getCouplingsOutfile()     { return (directory+"/"+outfile+".j");      }
     std::string getBestCouplingsOutfile() { return (directory+"/"+outfile+"-best.j"); }
     std::string getOutfile_TH()           { return (directory+"/"+outfile);           }  // Theta recording files

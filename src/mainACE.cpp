@@ -53,7 +53,7 @@
  -cl: none
     Print the list of selected clusters in a file .cl in the output folder.
     
- -co: none
+ -cc: none
     Print the list of selected clusters that are not also subsets of selected
     clusters. This list thus gives a minimal set of selected clusters that
     contains all other selected clusters as subsets. In the output file, which
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i],"-inputcl")==0) { if (++i==argc) break; else { r.inputClusters=true;
                                                                                r.ssinfile=argv[i];            } }
         else if (strcmp(argv[i],"-cl")==0)      { r.recClusters=true;                                           }
-        else if (strcmp(argv[i],"-co")==0)      { r.recClusterCover=true;                                       }
+        else if (strcmp(argv[i],"-cc")==0)      { r.recClusterCover=true;                                       }
         
         // Cluster size and threshold cutoffs
         
