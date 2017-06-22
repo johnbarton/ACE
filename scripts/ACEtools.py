@@ -4,10 +4,10 @@ import numpy as np
 
 #####################################################################################
 #                                                                                   #
-# Example usage from the Python command line                                        #
+# Example usage from the Python command line (in the main ACE directory)            #
 #                                                                                   #
 # Import all functions                                                              #
-# > from ACEtools import *                                                          #
+# > from scripts.ACEtools import *                                                  #
 #                                                                                   #
 # Compute correlations from MSA sequences                                           #
 # > WriteCMSA('fasta', 'p7-alignment.fasta', 0, 'entropy', 0.9, 'cons', 1, 'p7')    #
@@ -52,7 +52,11 @@ def WriteCMSA(filetype='fasta', filename='input', theta=0, redmethod='frequency'
     
     Input:
     
-    - filetype      Currently, only fasta sequence files are supported
+    - filetype      (string: "fasta", "binary", or "binaryT")
+                    If "fasta", process a multiple sequence alignment file in FASTA format. 
+                    If "binary", process a binary file, where all entries are zeros or ones, 
+                    (e.g. binarized neural recording), where each LINE represents one measurement of the system.
+                    If "binaryT", process a "binary" file, but where each COLUMN represents a recording.
     
     - filename      File name of the input alignment
     
@@ -93,7 +97,7 @@ def WriteCMSA(filetype='fasta', filename='input', theta=0, redmethod='frequency'
                     of a large number of replacements), set fillConvention='smooth' in the options below.
     """
 
-    # Set options for passing to getaaq
+    # Set options for passing to getaaq/getbin
     
     reweight    = (theta>0)
     byEntropy   = False
@@ -107,8 +111,137 @@ def WriteCMSA(filetype='fasta', filename='input', theta=0, redmethod='frequency'
         byFrequency = False
 
     if out=='': out = '.'.join(filename.split('.')[:-1])+'-output'
+    
+    
+    if filetype=='fasta':
+        getaaq(filein=filename, out=out, saveS=False, removeSingular=True, removeConsGap=False, fillGaps=(gapred==1), fillConvention='smooth', qcut=redcut, byEntropy=byEntropy, byFrequency=byFrequency, gauge=gauge, reweight=reweight, threshold=1.0-theta, pseudocount=0, gaplim=1.0, xlim=1.0, useX=False, savep3=False)
 
-    getaaq(filein=filename, out=out, saveS=False, removeSingular=True, removeConsGap=False, fillGaps=(gapred==1), fillConvention='smooth', qcut=redcut, byEntropy=byEntropy, byFrequency=byFrequency, gauge=gauge, reweight=reweight, threshold=1.0-theta, pseudocount=0, gaplim=1.0, xlim=1.0, useX=False, savep3=False)
+    elif filetype=='binary':
+        getbin(filein=filename, out=out, removeSingular=True, reweight=reweight, threshold=1.0-theta, transpose=False, savep3=False)
+
+    elif filetype=='binaryT':
+        getbin(filein=filename, out=out, removeSingular=True, reweight=reweight, threshold=1.0-theta, transpose=True, savep3=False)
+
+    else:
+        print('Filetype "%s" is not in the current list of options.' % filetype)
+
+
+def getbin(filein, out='', removeSingular=True, loadWeight=False, reweight=False, threshold=1.0, transpose=False, savep3=False, **kwargs):
+    """
+    This function reads in sequence data from a binary file, then outputs correlations and supplementary information.
+    
+    Input:
+    - filein            The file for the binary sequence data
+    - out               File prefix for writing out correlations, etc
+    - removeSingular    If true, remove sites with no variation when writing out correlations
+    - loadWeight        Sequence weights can be read in from an input file, specified here
+    - reweight          If true, reweight sequences
+    - threshold         Similarity fraction for reweighting sequences
+    - transpose         If true, transpose the data before processing
+    - savep3            If true, write out three-point correlations
+    """
+
+    # Read in binary sequences and transpose if necessary
+
+    msa = np.loadtxt(filein)
+
+    if transpose: msa = msa.T
+    
+    N   = len(msa[0])
+
+    # Sequence reweighting
+
+    B      = float(len(msa))
+    Beff   = B
+    weight = np.array([1.0 for i in range(len(msa))])
+    count  = []
+
+    if loadWeight:
+        weight = np.loadtxt(loadWeight, float)
+        Beff   = np.sum(weight)
+    if reweight: Beff, weight = seqreweight(msa, tag, threshold=threshold)
+
+    # Remove sites with no variation
+
+    p1      = np.sum(weight * msa.T, axis=1) / Beff
+    nonzero = (p1>0) * (p1<1)
+
+    if removeSingular:
+        msa = msa[:,nonzero]
+        N = len(msa[0])
+
+    # Compute correlations
+
+    p12 = np.einsum('i,ij,ik->jk', weight, msa, msa) / Beff
+
+    # Three-point correlations
+
+    if savep3 and out:
+        f    = open(out+'.p3', 'w')
+        p123 = np.einsum('i,ij,ik,il->jkl', weight, msa, msa, msa) / Beff
+        for i in range(N):
+            for j in range(i+1,N):
+                for k in range(j+1,N):
+                    f.write('%.6e\n' % p123[i,j,k])
+        f.close()
+
+    # Compute probability of n "mutations" (e.g. active neurons)
+    
+    nmut = np.sum(msa>0,axis=1)
+    pn   = np.zeros(N+1)
+
+    for i in range(len(nmut)):
+        padd          = np.zeros(N+1)
+        padd[nmut[i]] = weight[i] / Beff
+        pn           += padd
+
+    # If there is an output file, then print to file, else return info.
+    
+    print('Beff = %lf' % Beff)
+    
+    if out:
+        fileout = out
+        
+        # Write one- and two-point correlations
+        
+        f = open(fileout+pext,'w')
+        
+        for i in range(N):
+            f.write('%.8e\n' % p12[i,i])
+        
+        for i in range(N):
+            for j in range(i+1,N):
+                f.write('%.8e\n' % p12[i,j])
+
+        f.close()
+
+        # Write P(n) "mutations"
+        
+        fn = open(fileout+pnext,'w')
+        for i in pn:
+            fn.write('%.8e\t' % i)
+        fn.write('\n')
+        fn.close()
+
+        # Write report (higher level information)
+
+        consensus  = [str(int(p12[i,i]>=0.5)) for i in range(N)]
+        states     = 1 + nonzero
+        newnonzero = np.array([k for k in range(N) if nonzero[k]])
+
+        printReport(fileout, B, Beff, N, consensus, states, newnonzero, 1.0-np.array([p12[i,i] for i in range(N)]), 0)
+        
+        # Write supplementary CMSA files (Matlab equivalent)
+        
+        #printCMSA(msa, seqmap, out=fileout+'.cmsa') # CMSA
+
+        f = open(fileout+'.cons', 'w')              # Consensus (all zeros b/c of reordering)
+        for i in range(N): f.write('%d\n' % 0)
+        f.close()
+
+        f = open(fileout+'.wgt', 'w')               # Weight for each sequence
+        for i in weight: f.write('%.6e\n' % i)
+        f.close()
 
 
 def getaaq(filein, out='', saveS=False, removeSingular=True, removeConsGap=0.0, fillGaps=False, fillConvention='smooth', qcut=21, byEntropy=False, byFrequency=False, gauge='cons', convert=False, loadWeight=False, reweight=False, threshold=1.0, pseudocount=0, gaplim=1.0, xlim=1.0, useX=False, savep3=False, **kwargs):
