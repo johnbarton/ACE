@@ -164,10 +164,10 @@ def getbin(filein, out='', removeSingular=True, loadWeight=False, reweight=False
     # Remove sites with no variation
 
     p1      = np.sum(weight * msa.T, axis=1) / Beff
-    nonzero = (p1>0) * (p1<1)
+    nonsing = (p1>0) * (p1<1)
 
     if removeSingular:
-        msa = msa[:,nonzero]
+        msa = msa[:,nonsing]
         N = len(msa[0])
 
     # Compute correlations
@@ -226,10 +226,9 @@ def getbin(filein, out='', removeSingular=True, loadWeight=False, reweight=False
         # Write report (higher level information)
 
         consensus  = [str(int(p12[i,i]>=0.5)) for i in range(N)]
-        states     = 1 + nonzero
-        newnonzero = np.array([k for k in range(N) if nonzero[k]])
+        states     = 1 + nonsing
 
-        printReport(fileout, B, Beff, N, consensus, states, newnonzero, 1.0-np.array([p12[i,i] for i in range(N)]), 0)
+        printReport(fileout, B, Beff, N, consensus, states, nonsing, 1.0-np.array([p12[i,i] for i in range(N)]), 0)
         
         # Write supplementary CMSA files (Matlab equivalent)
         
@@ -747,7 +746,7 @@ def printReport(fileout, B, Beff, N, groundstate, variation, nonzero, concentrat
         fr.write('%d\t' % i)
     fr.write('\n')
     
-    fr.write('deleted sites (singular, p=0):\n')
+    fr.write('deleted sites (singular, p=0 or p=1):\n')
     for i in range(len(nonzero)):
         if not nonzero[i]:
             fr.write('%d\t' % i)
