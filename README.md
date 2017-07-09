@@ -2,7 +2,7 @@
 src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-#### ACE [![Build Status](https://travis-ci.org/johnbarton/ACE.svg?branch=master)](https://travis-ci.org/johnbarton/ACE)
+#### ACE [![Build Status](https://travis-ci.org/johnbarton/ACE.svg?branch=master)](https://travis-ci.org/johnbarton/ACE) [![DOI](https://zenodo.org/badge/32744304.svg)](https://zenodo.org/badge/latestdoi/32744304)
 
 # Table of contents
 
@@ -195,17 +195,17 @@ On difficult data sets (for example, systems of very large size, those with many
 
 # References
 
-1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>Bioinformatics</i>, doi:http://dx.doi.org/10.1093/bioinformatics/btw328][1].
-[1]: http://dx.doi.org/10.1093/bioinformatics/btw328
+1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>Bioinformatics</i>, <b>32</b>(20): 3089-3097. DOI: https://dx.doi.org/10.1093/bioinformatics/btw328][1].
+[1]: https://dx.doi.org/10.1093/bioinformatics/btw328
  
-2. [Cocco, S. and Monasson, R. (2011). Adaptive Cluster Expansion for Inferring Boltzmann Machines with Noisy Data. <i>Physical Review Letters</i>, <b>106</b>, 090601][2].
-[2]: http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.106.090601
+2. [Cocco, S. and Monasson, R. (2011). Adaptive Cluster Expansion for Inferring Boltzmann Machines with Noisy Data. <i>Physical Review Letters</i>, <b>106</b>, 090601. DOI: https://doi.org/10.1103/PhysRevLett.106.090601][2].
+[2]: https://doi.org/10.1103/PhysRevLett.106.090601
 
-3. [Cocco, S. and Monasson, R. (2012). Adaptive Cluster Expansion for the Inverse Ising Problem: Convergence, Algorithm and Tests.<i> Journal of Statistical Physics</i>, <b>147</b>(2), 252–314][3].
-[3]: http://link.springer.com/article/10.1007/s10955-012-0463-4#page-1
+3. [Cocco, S. and Monasson, R. (2012). Adaptive Cluster Expansion for the Inverse Ising Problem: Convergence, Algorithm and Tests.<i> Journal of Statistical Physics</i>, <b>147</b>(2), 252–314. DOI: https://doi.org/10.1007/s10955-012-0463-4][3].
+[3]: https://doi.org/10.1007/s10955-012-0463-4
 
-4. [Barton, J. and Cocco, S. (2013). Ising models for neural activity inferred via selective cluster expansion: structural and coding properties. <i>Journal of Statistical Mechanics: Theory and Experiment</i>, <b>2013</b>(03), P03002][4].
-[4]: http://iopscience.iop.org/1742-5468/2013/03/P03002
+4. [Barton, J. and Cocco, S. (2013). Ising models for neural activity inferred via selective cluster expansion: structural and coding properties. <i>Journal of Statistical Mechanics: Theory and Experiment</i>, <b>2013</b>(03), P03002. DOI: https://dx.doi.org/10.1088/1742-5468/2013/03/P03002][4].
+[4]: https://dx.doi.org/10.1088/1742-5468/2013/03/P03002
 
 
 > Written with [StackEdit](https://stackedit.io/).
