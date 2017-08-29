@@ -682,10 +682,11 @@ def getstates(count, qcut, byEntropy=False, byFrequency=False, gauge='cons', use
                 nstates = np.max([   1,     nstates])
 
             # Get gauge state
-            if gauge=='cons':     gaugeidx = 0
-            elif gauge=='least':  gaugeidx = nstates-2
-            elif gauge=='group':  gaugeidx = nstates-1
-            else:                 gaugeidx = AAsort.index(gaugeseq[i])
+            if gauge=='cons':                           gaugeidx = 0
+            elif gauge=='least' and nstates<len(freq):  gaugeidx = nstates-2
+            elif gauge=='least' and nstates>=len(freq): gaugeidx = nstates-1
+            elif gauge=='group':                        gaugeidx = nstates-1
+            else:                                       gaugeidx = AAsort.index(gaugeseq[i])
             if gaugeidx>=nstates: gaugeidx = nstates-1  # map to grouped state if 'wt' state is grouped
         
             # Map from AA to state
@@ -698,14 +699,14 @@ def getstates(count, qcut, byEntropy=False, byFrequency=False, gauge='cons', use
                 # Map gauge state to the zero vector
                 if i==gaugeidx:
                     map = 0
-                    tempvmap[i] = np.array([v for v in vec])
+                    tempvmap[map] = np.array([v for v in vec])
                 
                 # Map other states to correct index
                 else:
-                    vec[ct-1]   = 1.0
-                    tempvmap[i] = np.array([v for v in vec])
-                    vec[ct-1]   = 0.0
-                    ct         += 1
+                    vec[ct-1]     = 1.0
+                    tempvmap[map] = np.array([v for v in vec])
+                    vec[ct-1]     = 0.0
+                    ct           += 1
                 
                 # Map AA to state
                 tempsmap[AAsort[i]] = map
@@ -713,7 +714,7 @@ def getstates(count, qcut, byEntropy=False, byFrequency=False, gauge='cons', use
                     if nstates>1 and gaugeidx!=nstates-1: vec[-1] = 1.0
                     for j in range(nstates, len(AA)):
                         tempsmap[AAsort[j]] = map
-                        tempvmap[j]         = np.array([v for v in vec])
+                        tempvmap[map]       = np.array([v for v in vec])
 
             # Append maps to list
             seqmap.append(tempsmap)
