@@ -15,7 +15,7 @@
 %
 % J P Barton, E de Leonardis, A Coucke, and S Cocco (2016)
 % ACE: adaptive cluster expansion for maximum entropy
-% graphical model inference. Bioinformatics.
+% graphical model inference. Bioinformatics 32, 3089-3097.
 % and 
 % S Cocco and R Monasson (2011). Adaptive Cluster Expansion for 
 % Inferring Boltzmann Machines with Noisy Data. Physical Review 
@@ -33,11 +33,13 @@
 %
 % -filetype (string, default: "numbers")
 %   This specifies the format of the input alignment.
-%   Three alignment formats are possible:
-%   "numbers" - The alignment consists of a matrix with B rows (the sequences)
-%       and N columns (the sites). States are identified by numbers.
-%   "letters" - The alignment consists of a matrix with B rows (the sequences)
-%       and N columns (the sites). States are identified by letters.
+%   Four alignment formats are possible:
+%   "binary" - The alignment is a matrix with B rows (sequences) and N
+%       columns (sites). States are identified by numbers 0/1 only.
+%   "numbers" - The alignment consists of a matrix with B rows (sequences)
+%       and N columns (sites). States are identified by numbers.
+%   "letters" - The alignment consists of a matrix with B rows (sequences)
+%       and N columns (sites). States are identified by letters.
 %   "fasta" - The alignment is in the standard fasta format.
 %
 % -filename (string)
@@ -176,6 +178,12 @@ function WriteCMSA(filetype, filename, theta, redmethod, redcut, gauge, gapred)
         end
 
     elseif (strcmp(filetype,'numbers'))
+        name = filename;
+        alignc = dlmread(name);
+        N = size(alignc,2);
+        M = size(alignc,1);
+        
+    elseif (strcmp(filetype,'binary'))
         name = filename;
         alignc = dlmread(name);
         N = size(alignc,2);

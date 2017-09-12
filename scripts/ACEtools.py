@@ -232,7 +232,7 @@ def getbin(filein, out='', removeSingular=True, loadWeight=False, reweight=False
         
         # Write supplementary CMSA files (Matlab equivalent)
         
-        #printCMSA(msa, seqmap, out=fileout+'.cmsa') # CMSA
+        printCMSAbin(msa, out=fileout+'.cmsa')      # CMSA
 
         f = open(fileout+'.cons', 'w')              # Consensus (all zeros b/c of reordering)
         for i in range(N): f.write('%d\n' % 0)
@@ -795,6 +795,33 @@ def printCMSA(msa, smap, out=''):
 
     f.close()
 
+
+def printCMSAbin(msa, out=''):
+    """
+    Given input binary sequences, write the corresponding cmsa to 'out'.
+    """
+
+    # Get amino acids at each site
+    
+    N    = len(msa[0])
+    q    = [1 for i in range(N)]
+    aaid = [[[] for x in range(q[i])] for i in range(N)]
+    
+    for i in range(N):
+        for j in range(len(msa)):
+            id = int(msa[j][i])
+            if id>0: aaid[i][id-1].append(j)
+
+    # Write out cmsa
+
+    f = open(out,'w')
+
+    for i in range(N):
+        for j in range(q[i]):
+            f.write('-1\n')
+            for k in aaid[i][j]: f.write('%d\n' % k)
+
+    f.close()
 
 
 # Reading in data

@@ -13,9 +13,9 @@
 %
 % Any publications resulting from applications of ACE should cite:
 %
-% J P Barton, E de Leonardis, A Coucke, and S Cocco (2015)
+% J P Barton, E de Leonardis, A Coucke, and S Cocco (2016)
 % ACE: adaptive cluster expansion for maximum entropy
-% graphical model inference
+% graphical model inference. Bioinformatics 32, 3089-3097.
 % and 
 % S Cocco and R Monasson (2011). Adaptive Cluster Expansion for 
 % Inferring Boltzmann Machines with Noisy Data. Physical Review 
