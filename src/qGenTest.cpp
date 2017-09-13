@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <time.h>
 
 #include "qGenTest.h"       // Generative Test declarations
 #include "monteCarlo.h"     // Monte Carlo

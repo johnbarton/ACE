@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <time.h>
 
 #include "tools.h"      // Numerical tools
 #include "monteCarlo.h" // MC declarations

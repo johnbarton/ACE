@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <time.h>
 
 #include "qLearnSparse.h"   // MC learning declarations
 #include "monteCarlo.h"     // Monte Carlo
