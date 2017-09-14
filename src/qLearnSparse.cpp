@@ -290,25 +290,31 @@ int runLearn(RunParametersQLS &r) {
     Vector J, expJ;
     
     // Get reference correlations from file
-    
-    FILE *compIn=fopen(r.getCompareInfile().c_str(),"r");
         
-    if (compIn!=NULL) getCorrelations(compIn,q);
-    else { printf("Error reading input from file %s",r.getCompareInfile().c_str()); return EXIT_FAILURE; }
-    fclose(compIn);
+    if (FILE *compIn = fopen(r.getCompareInfile().c_str(),"r")) {
+        getCorrelations(compIn,q);
+        fclose(compIn);
+    }
+    else {
+        printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getCompareInfile().c_str());
+        return EXIT_FAILURE;
+    }
     
     p.resize(q.size(),std::vector<double>());
     for (int i=0;i<p.size();i++) p[i].resize(q[i].size(), 0);
     
     // Retrieve initial couplings from file
-    
-    FILE *dataIn=fopen(r.getInfile().c_str(),"r");
         
-    if (dataIn!=NULL) getCouplings(dataIn,J);
-    else { printf("Error reading input from file %s",r.getInfile().c_str()); return EXIT_FAILURE; }
-    fclose(dataIn);
+    if (FILE *dataIn = fopen(r.getInfile().c_str(),"r")) {
+        getCouplings(dataIn,J);
+        fclose(dataIn);
+    }
+    else {
+        printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getInfile().c_str());
+        return EXIT_FAILURE;
+    }
     
-    FILE *compOut=fopen(r.getCompareOutfile().c_str(),"w");
+    FILE *compOut = fopen(r.getCompareOutfile().c_str(),"w");
     
     // Resize expJ
     
@@ -338,14 +344,14 @@ int runLearn(RunParametersQLS &r) {
 	
     // Prepare Monte Carlo
     
-    int    N        = sizetolength(J.size());   // System size
-    double epsMax   = 1;                        // Maximum single term error tolerance (relative to maximum error norm, see below)
-    double gamma    = 0;                        // Regularization strength (L2, set below)
+    int    N      = sizetolength(J.size());   // System size
+    double epsMax = 1;                        // Maximum single term error tolerance (relative to maximum error norm, see below)
+    double gamma  = 0;                        // Regularization strength (L2, set below)
     
     if (r.useGamma) {
     
-        if (r.gamma==0) gamma=computeGamma_L2(q,r.sampleB);
-        else            gamma=r.gamma;
+        if (r.gamma==0) gamma = computeGamma_L2(q,r.sampleB);
+        else            gamma = r.gamma;
         
     }
     
@@ -365,8 +371,8 @@ int runLearn(RunParametersQLS &r) {
         // Add all pairs (future, update only select couplings)
         
         std::vector<int> pair(2,0);
-        pair[0]=i;
-        pair[1]=j;
+        pair[0] = i;
+        pair[1] = j;
             
         nz.push_back(pair);
             
@@ -378,13 +384,18 @@ int runLearn(RunParametersQLS &r) {
     
     if (r.useStart) {
     
-        FILE *startIn=fopen(r.getStartInfile().c_str(),"r");
-        for (int i=0;i<N;i++) fscanf(startIn,"%d",&lattice[i]);
-        fclose(startIn);
+        if (FILE *startIn = fopen(r.getStartInfile().c_str(),"r")) {
+            for (int i=0;i<N;i++) fscanf(startIn,"%d",&lattice[i]);
+            fclose(startIn);
+        }
+        else {
+            printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getStartInfile().c_str());
+            return EXIT_FAILURE;
+        }
     
     }
     
-    else { for (int i=0;i<N;i++) lattice[i]=(int) q[i].size(); }
+    else { for (int i=0;i<N;i++) lattice[i] = (int) q[i].size(); }
     
     // Prepare to simulate
     
@@ -422,21 +433,28 @@ int runLearn(RunParametersQLS &r) {
         
         // Write out couplings
         
-        FILE *dataOut=fopen(r.getCouplingsOutfile().c_str(),"w");
+        if (FILE *dataOut = fopen(r.getCouplingsOutfile().c_str(),"w")) {
+            printCouplings(dataOut, J);
+            fclose(dataOut);
+        }
+        else {
+            printf("Error writing output to file %s!\n",r.getCouplingsOutfile().c_str());
+            return EXIT_FAILURE;
+        }
         
-        if (dataOut!=NULL) printCouplings(dataOut, J);
-        else { printf("Error writing output to file %s",r.getCouplingsOutfile().c_str()); return EXIT_FAILURE;; }
-        fclose(dataOut);
     
     }
     
     // Write out couplings
     
-    FILE *dataOut=fopen(r.getCouplingsOutfile().c_str(),"w");
-    
-    if (dataOut!=NULL) printCouplings(dataOut, J);
-    else { printf("Error writing output to file %s",r.getCouplingsOutfile().c_str()); return EXIT_FAILURE;; }
-    fclose(dataOut);
+    if (FILE *dataOut = fopen(r.getCouplingsOutfile().c_str(),"w")) {
+        printCouplings(dataOut, J);
+        fclose(dataOut);
+    }
+    else {
+        printf("Error writing output to file %s!\n",r.getCouplingsOutfile().c_str());
+        return EXIT_FAILURE;
+    }
     
     return EXIT_SUCCESS;
     

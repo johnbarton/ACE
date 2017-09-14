@@ -47,12 +47,15 @@ int runGenTest(RunParameters &r) {
     }
     
     // Get reference sequence from file
-    
-    FILE *consIn = fopen(r.getConsensusInfile().c_str(),"r");
 
-    if (consIn!=NULL) getConsensus(consIn,cons);
-    else { printf("Error reading input from file %s\n",r.getConsensusInfile().c_str()); return EXIT_FAILURE; }
-    fclose(consIn);
+    if (FILE *consIn = fopen(r.getConsensusInfile().c_str(),"r")) {
+        getConsensus(consIn,cons);
+        fclose(consIn);
+    }
+    else {
+        printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getConsensusInfile().c_str());
+        return EXIT_FAILURE;
+    }
     
     if (r.useVerbose) {
 
@@ -64,11 +67,15 @@ int runGenTest(RunParameters &r) {
 
     // Retrieve couplings from file
     
-    FILE *dataIn=fopen(r.getInfile().c_str(),"r");
-
-    if (dataIn!=NULL) getCouplings(dataIn,J);
-    else { printf("Error reading input from file %s",r.getInfile().c_str()); return EXIT_FAILURE; }
-    fclose(dataIn);
+    if (FILE *dataIn=fopen(r.getInfile().c_str(),"r")) {
+        getCouplings(dataIn,J);
+        fclose(dataIn);
+    }
+    else {
+        printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getInfile().c_str());
+        return EXIT_FAILURE;
+    }
+    
 
     // Resize expJ
     
@@ -118,16 +125,21 @@ int runGenTest(RunParameters &r) {
 
     // Get sequences from MSA file and compute correlations
 
-    FILE *alIn=fopen(r.getInfileAl().c_str(),"r");
-    FILE *weightIn=fopen(r.getWeights().c_str(),"r");
+    ;
 
-    if (alIn!=NULL){
+    if (FILE *alIn = fopen(r.getInfileAl().c_str(),"r")) {
+        FILE *weightIn = fopen(r.getWeights().c_str(),"r");
+        
         if (computeThreePoints) getAlignment(alIn, weightIn, J, q, q3, qk, cons, r.MSAEnOutfile());
         else                    getAlignment(alIn, weightIn, J, q,     qk, cons, r.MSAEnOutfile());
+        
+        if (weightIn!=NULL) fclose(weightIn);
+        fclose(alIn);
     }
-    else { printf("Error reading input from file %s\n",r.getInfileAl().c_str()); return EXIT_FAILURE; }
-    fclose(alIn);
-    if (weightIn!=NULL) fclose(weightIn);
+    else {
+        printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getInfileAl().c_str());
+        return EXIT_FAILURE;
+    }
 
     if (r.useVerbose) printf("Got N=%d, len(h[0])=%d\n",N,(int)J[0].size());
 
@@ -187,9 +199,14 @@ int runGenTest(RunParameters &r) {
 
     // Compute and print correlations
     
-    FILE *pkout = fopen(r.getPKOutfile().c_str(),"w");
-    for (int i=0;i<qk.size();i++) fprintf(pkout,"%d %le %le\n",i,qk[i],pk[i]);
-    fclose(pkout);
+    if (FILE *pkout = fopen(r.getPKOutfile().c_str(),"w")) {
+        for (int i=0;i<qk.size();i++) fprintf(pkout,"%d %le %le\n",i,qk[i],pk[i]);
+        fclose(pkout);
+    }
+    else {
+        printf("Error writing output to file %s!\n",r.getPKOutfile().c_str());
+        return EXIT_FAILURE;
+    }
     
     FILE *p1out = fopen(r.getMOutfile().c_str(),"w");
     FILE *p2out = fopen(r.getP2Outfile().c_str(),"w");

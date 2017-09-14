@@ -649,22 +649,26 @@ int run(RunParameters &r) {
     
     // Retrieve correlations from file and set system, key sizes
     
-    FILE *datain=fopen(r.getCorrelationsInfile().c_str(),"r");
-    
-    if (datain!=NULL) {
+    if (FILE *datain = fopen(r.getCorrelationsInfile().c_str(),"r")) {
         
         getCorrelations(datain, correlations);
         
         N = sizetolength(correlations.size());
         keySize = (N + storageSize - 1) / storageSize;
     
+        fclose(datain);
+    
     }
-    else { printf("Problem retrieving data from file: %s!\n",r.getCorrelationsInfile().c_str()); return EXIT_FAILURE; }
-    fclose(datain);
+    else {
+    
+        printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getCorrelationsInfile().c_str());
+        return EXIT_FAILURE;
+        
+    }
     
     // Open supplementary output file
     
-    FILE *supout=fopen(r.getSupplementaryOutfile().c_str(),"w");
+    FILE *supout = fopen(r.getSupplementaryOutfile().c_str(),"w");
     
     // If number of data points given, compute optimal regularization strength
     
@@ -743,10 +747,9 @@ int run(RunParameters &r) {
 
         if (r.useVerbose) printf("Selecting clusters from the input list\n");
 
-        FILE *ssin=fopen(r.getSecStructInfile().c_str(),"r");
         IntVector ss;
 
-        if (ssin!=NULL) {
+        if (FILE *ssin = fopen(r.getSecStructInfile().c_str(),"r")) {
             
             getSS(ssin, ss);
             
@@ -770,11 +773,12 @@ int run(RunParameters &r) {
 
             }
             
+            fclose(ssin);
+            
     	}
-        else printf("Problem retrieving data from file: %s!\n",r.getSecStructInfile().c_str());
         
-        fclose(ssin);
-
+        else printf("Problem retrieving data from file %s! The file may not exist, or it may be inaccessible\n",r.getSecStructInfile().c_str());
+        
 	}
     
     // MAIN ALGORITHM
@@ -813,8 +817,8 @@ int run(RunParameters &r) {
     
     int maxClusterSize=1;
     std::set<Key> clusters;
-    FILE *output=NULL;
-    if (r.recClusters) output=fopen(r.getClusterOutfile().c_str(),"w");
+    FILE *output = NULL;
+    if (r.recClusters) output = fopen(r.getClusterOutfile().c_str(),"w");
     if (r.inputClusters==false) getClusters(clusters, maxClusterSize, r.kmax, theta, r.useLax, r.useVerbose, ssSites, output);
     if (r.recClusters) fclose(output);
 	
@@ -854,7 +858,7 @@ int run(RunParameters &r) {
         
         // First record data
         
-        FILE *infout=fopen(r.getCouplingsOutfile().c_str(),"w");
+        FILE *infout = fopen(r.getCouplingsOutfile().c_str(),"w");
         printCouplings(infout, finalJ);
         fclose(infout);
         
@@ -919,13 +923,13 @@ int run(RunParameters &r) {
             char value[64];
             sprintf(value, "%.6f",recTheta);
 	    
-            std::string filename=r.getOutfile_TH()+"_th"+value+".j";
-            FILE *infout=fopen(filename.c_str(),"w");
+            std::string filename = r.getOutfile_TH()+"_th"+value+".j";
+            FILE *infout = fopen(filename.c_str(),"w");
             printCouplings(infout,trecJ);
             fclose(infout);
 	    
-            filename=r.getOutfile_TH()+".th";
-            FILE *out=fopen(filename.c_str(),"a");
+            filename = r.getOutfile_TH()+".th";
+            FILE *out = fopen(filename.c_str(),"a");
             fprintf(out,"%.6f  %d\n",recTheta,1000);
             fclose(out);
 	    
@@ -941,8 +945,8 @@ int run(RunParameters &r) {
         maxClusterSize=1;
         clusters.clear();
         
-        FILE *output=NULL;
-        if (r.recClusters) output=fopen(r.getClusterOutfile().c_str(),"w");
+        FILE *output = NULL;
+        if (r.recClusters) output = fopen(r.getClusterOutfile().c_str(),"w");
         getClusters(clusters, maxClusterSize, r.kmax, theta, r.useLax, r.useVerbose, ssSites, output);
         if (r.recClusters) fclose(output);
         
@@ -968,7 +972,7 @@ int run(RunParameters &r) {
     
     // Record final data and exit
     
-    FILE *infout=fopen(r.getCouplingsOutfile().c_str(),"w");
+    FILE *infout = fopen(r.getCouplingsOutfile().c_str(),"w");
     printCouplings(infout,finalJ);
     fclose(infout);
 
