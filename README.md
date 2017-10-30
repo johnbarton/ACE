@@ -34,25 +34,17 @@ Running the algorithm requires a set of correlations as input, to be computed fr
 
 As an example, let's consider a system of \\(N\\) variables described by the configuration \\(\underline{x}=\{x_1, x_2,\ldots,x_N\}\\), with each variable \\(x_i\\) taking one of \\(q_i\\) possible values, \\(x_i\in\{1,2,\ldots,q_i\}\\). From a set of \\(B\\) observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
 
-$$
-\begin{aligned}
-\begin{align}
-p_i(a) &= \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\,,\\
-p_{ij}(a,b) &= \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\delta(x_j,b)\,.
-\end{align}
-\end{aligned}
-$$
+$$ p_i(a) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\,, $$
+$$ p_{ij}(a,b) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\delta(x_j,b)\,. $$
 
 Here \\(\delta\\) represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension `.p`, in the following format:
 
-```
 \\(p_1(1)\\) \\(p_1(2)\\) ... \\(p_1(q_1-1)\\)
 \\(p_2(1)\\) \\(p_2(2)\\) ... \\(p_2(q_2-1)\\)
 ...
 \\(p_N(1)\\) \\(p_N(2)\\) ... \\(p_N(q_N-1)\\)
 \\(p_{1,2}(1,1)\\) \\(p_{1,2}(1,2)\\) ... \\(p_{1,2}(1,q_2-1)\\) \\(p_{1,2}(2,1)\\) \\(p_{1,2}(2,2)\\) ... \\(p_{1,2}(q_1-1,q_2-1)\\)
 \\(p_{1,3}(1,1)\\) ...
-```
 
 In other words, the first \\(N\\) lines of the file record the frequency that each state is observed at each site, and the next \\(N(N-1)/2\\) lines record the pairwise correlations. Note that, because \\(\sum_{a=1}^{q_i} p_i(a)=1\\), the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
 
