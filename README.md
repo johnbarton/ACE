@@ -179,14 +179,14 @@ On difficult data sets (for example, systems of very large size, those with many
 ### Additional QLS options
 
 - `-c` specifies the set of (true) correlations to compare with for the MC learning routine (default: "input")
-- `-e` sets the maximum tolerable error threshold; the program will run until all of the error terms $\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<e$ (default: 1)
+- `-e` sets the maximum tolerable error threshold; the program will run until all of the error terms $$\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<e$$ (default: 1)
 
 ### Additional QGT options
 
 - `-c` specifies the file giving the consensus sequence (default: "input")
 - `-m` specifies the file containing the compressed representation of the data (i.e. the compressed MSA, default: "input")
 - `-w` specifies the file with weights for each configuration in the data (default: "input")
-- `-pthresh` sets the threshold for three-point correlations that will be printed (default: $10\times \langle p\rangle$, where $\langle p \rangle$ is the average one-point correlation)
+- `-pthresh` sets the threshold for three-point correlations that will be printed (default: $$10\times \langle p\rangle$$, where $$\langle p \rangle$$ is the average one-point correlation)
 - `-p3` enables computation and comparison of three-point correlations; note that by default not all correlations are printed (see `-pthresh` option above)
 - `-p3full` enables computation and comparison of three-point correlations and sets `pthresh` to zero
 - `-nmax` set the maximum number of three-point correlations to print, another way to control file size (default: none)
