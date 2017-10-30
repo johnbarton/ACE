@@ -1,7 +1,3 @@
-<script type="text/javascript"
-src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
 #### ACE [![Build Status](https://travis-ci.org/johnbarton/ACE.svg?branch=master)](https://travis-ci.org/johnbarton/ACE) [![DOI](https://zenodo.org/badge/32744304.svg)](https://zenodo.org/badge/latestdoi/32744304)
 
 # Table of contents
@@ -49,12 +45,14 @@ $$
 
 Here \\(\delta\\) represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension `.p`, in the following format:
 
-> \\(p_1(1)\\) \\(p_1(2)\\) ... \\(p_1(q_1-1)\\)
-> \\(p_2(1)\\) \\(p_2(2)\\) ... \\(p_2(q_2-1)\\)
-> ...
-> \\(p_N(1)\\) \\(p_N(2)\\) ... \\(p_N(q_N-1)\\)
-> \\(p_{1,2}(1,1)\\) \\(p_{1,2}(1,2)\\) ... \\(p_{1,2}(1,q_2-1)\\) \\(p_{1,2}(2,1)\\) \\(p_{1,2}(2,2)\\) ... \\(p_{1,2}(q_1-1,q_2-1)\\)
-> \\(p_{1,3}(1,1)\\) ...
+```
+\\(p_1(1)\\) \\(p_1(2)\\) ... \\(p_1(q_1-1)\\)
+\\(p_2(1)\\) \\(p_2(2)\\) ... \\(p_2(q_2-1)\\)
+...
+\\(p_N(1)\\) \\(p_N(2)\\) ... \\(p_N(q_N-1)\\)
+\\(p_{1,2}(1,1)\\) \\(p_{1,2}(1,2)\\) ... \\(p_{1,2}(1,q_2-1)\\) \\(p_{1,2}(2,1)\\) \\(p_{1,2}(2,2)\\) ... \\(p_{1,2}(q_1-1,q_2-1)\\)
+\\(p_{1,3}(1,1)\\) ...
+```
 
 In other words, the first \\(N\\) lines of the file record the frequency that each state is observed at each site, and the next \\(N(N-1)/2\\) lines record the pairwise correlations. Note that, because \\(\sum_{a=1}^{q_i} p_i(a)=1\\), the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
 
@@ -79,12 +77,14 @@ This creates two new files, `examples/p7-out.sce` and `examples/p7-out.j`, which
 
 Output from the first file, `examples/p7-out.sce`, should appear something like the following:
 
->8.463532e-04	1.917385e+01	9.964734e+00	1.309919e+02	1.186601e+01	4	3321	364
->8.060507e-04	1.911941e+01	1.019924e+01	1.334989e+02	1.186352e+01	4	3343	373
->7.676673e-04	2.298425e+01	1.194769e+01	1.659755e+02	1.186115e+01	4	3353	380
->7.311117e-04	2.550650e+01	1.277885e+01	1.768295e+02	1.185510e+01	4	3399	390
->6.962969e-04	1.842427e+01	9.891297e+00	1.219612e+02	1.185371e+01	4	3442	406
->...
+```
+8.463532e-04	1.917385e+01	9.964734e+00	1.309919e+02	1.186601e+01	4	3321	364
+8.060507e-04	1.911941e+01	1.019924e+01	1.334989e+02	1.186352e+01	4	3343	373
+7.676673e-04	2.298425e+01	1.194769e+01	1.659755e+02	1.186115e+01	4	3353	380
+7.311117e-04	2.550650e+01	1.277885e+01	1.768295e+02	1.185510e+01	4	3399	390
+6.962969e-04	1.842427e+01	9.891297e+00	1.219612e+02	1.185371e+01	4	3442	406
+...
+```
 
 These columns represent, respectively: the current value of the threshold \\(\theta\\), error on the one-point correlations \\(\epsilon_{p1}\\), error on the pairwise correlations \\(\epsilon_{p2}\\), normalized maximum error \\(\epsilon_{\rm max}\\), current estimate of the entropy \\(S\\), maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which \\(| \Delta S |>\theta\\)).
 
@@ -92,7 +92,7 @@ The inferred Potts parameters in the second file, `examples/p7-out.j`, are outpu
 
 The final line of `examples/p7-out.sce` should then appear something like:
 
->1.338016e-05	3.641289e-01	1.674574e-01	9.498217e-01	1.169706e+01	6	20293	4773
+`1.338016e-05	3.641289e-01	1.674574e-01	9.498217e-01	1.169706e+01	6	20293	4773`
 
 The error for the Potts parameters is low (the error terms \\(\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<1\\)), but we can follow this initial inference step by running the <b>M</b>onte <b>C</b>arlo (MC) learning algorithm to ensure convergence. This is particularly useful when convergence is difficult to obtain in the cluster algorithm alone. Typically we find that MC learning is more likely to be successful when the entropy has nearly converged (see column 6 in `examples/p7-out.sce`).
 
@@ -109,12 +109,14 @@ This creates two additional output files, `examples/p7-out-learn.fit` and `examp
 
 Output from the first file, `examples/p7-out-learn.fit`, should appear something like the following:
 
->1	1.877327e-01	1.266454e-01	1.303780e+00	1.900000e+00
->2	1.976668e-01	1.284943e-01	1.329022e+00	3.610000e+00
->3	1.956319e-01	1.276321e-01	1.340715e+00	6.859000e+00
->4	1.959972e-01	1.282958e-01	1.279392e+00	1.303210e+01
->5	2.073654e-01	1.295238e-01	1.377221e+00	2.476099e+01
->...
+```
+1	1.877327e-01	1.266454e-01	1.303780e+00	1.900000e+00
+2	1.976668e-01	1.284943e-01	1.329022e+00	3.610000e+00
+3	1.956319e-01	1.276321e-01	1.340715e+00	6.859000e+00
+4	1.959972e-01	1.282958e-01	1.279392e+00	1.303210e+01
+5	2.073654e-01	1.295238e-01	1.377221e+00	2.476099e+01
+...
+```
 
 These columns represent, respectively: the current iteration, error on the one-point correlations \\(\epsilon_{p1}\\), error on the pairwise correlations \\(\epsilon_{p2}\\), normalized maximum error \\(\epsilon_{\rm max}\\), and the maximum size of the weight parameter used in the MC learning update step. Note that the error is slightly different in this case than at the end of the cluster algorithm. This is because, by default, the MC learning algorithm computes the correlations using a larger number of samples.
 
