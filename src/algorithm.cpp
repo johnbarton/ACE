@@ -867,37 +867,33 @@ int run(RunParameters &r) {
         if (r.recClusterCover) {
         
             FILE *cout = fopen(r.getClusterCoverOutfile().c_str(),"w");
-            
-            for (std::map<Key,Cluster>::iterator i=(*clusterIndex).begin();i!=(*clusterIndex).end();++i) {
-    
-                if ((*i).second.selected && !(*i).second.superSelected) {
-        
-                    // Map cluster to the whole system
-                    
-                    int clusterSize = sizetolength((*i).second.dJ.size());
-                    int spins[clusterSize];
-                    
-                    int n = 0;
-                    
-                    for (int j=0;j<keySize && n<clusterSize;j++) { for (int k=0;k<storageSize && n<clusterSize;k++) {
-                            
-                        if ((*i).first[j] & (unsigned long) 1<<k) { spins[n] = storageSize * j + k; n++; }
-                        
-                    } }
-                
-                    // Print cluster content
-                
-                    fprintf(cout,"%.6e\t",(*i).second.dS);
-                    for (int j=0;j<clusterSize;j++) fprintf(cout," %d",spins[j]);
-                    fprintf(cout,"\n");
-                    fflush(cout);
-                
-                }
-            
-            }
+
+            for (std::map<Key,Cluster>::iterator i=(*clusterIndex).begin();i!=(*clusterIndex).end();++i) { if ((*i).second.selected && !(*i).second.superSelected) {
+
+                // Map cluster to the whole system
+
+                int clusterSize = sizetolength((*i).second.dJ.size());
+                int spins[clusterSize];
+
+                int n = 0;
+
+                for (int j=0;j<keySize && n<clusterSize;j++) { for (int k=0;k<storageSize && n<clusterSize;k++) {
+
+                    if ((*i).first[j] & (unsigned long) 1<<k) { spins[n] = storageSize * j + k; n++; }
+
+                } }
+
+                // Print cluster content
+
+                fprintf(cout,"%.6e\t",(*i).second.dS);
+                for (int j=0;j<clusterSize;j++) fprintf(cout," %d",spins[j]);
+                fprintf(cout,"\n");
+                fflush(cout);
+
+            } }
             
             fclose(cout);
-        
+            
         }
         
         // Find min error on correlations and record J and h

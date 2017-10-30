@@ -833,8 +833,8 @@ void getError(const Vector &q, const Vector &J, int N, double B, int numSteps, i
         double deltaP = fabs(error[0] - lastError[0]);
         double deltaC = fabs(error[1] - lastError[1]);
   
-        bool pBad  = ( (error[0] > 1.0) && (error[0] - 3 * deltaP > 1) );
-        bool cBad  = ( (error[1] > 1.0) && (error[1] - 3 * deltaC > 1) );
+        bool pBad  = ( (error[0] > 1.0) && (error[0] - 1 * deltaP > 1) );
+        bool cBad  = ( (error[1] > 1.0) && (error[1] - 1 * deltaC > 1) );
         bool pGood = ( (error[0] < 1.0) && (error[0] + 1 * deltaP < 1) );
         bool cGood = ( (error[1] < 1.0) && (error[1] + 1 * deltaC < 1) );
             
@@ -843,7 +843,7 @@ void getError(const Vector &q, const Vector &J, int N, double B, int numSteps, i
         else {
             
             for (int i=0;i<q.size();i++) { for (int j=0;j<q[i].size();j++) p[i][j] = 0; }
-            multiplier*=2;
+            multiplier *= 2;
             //printf("m=%d, e_p=%.4e, e_c=%.4e\n",(int)multiplier,error[0],error[1]);
                 
         }

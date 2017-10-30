@@ -43,28 +43,29 @@ public:
     
     RunParameters() {
         
-        directory=".";
-        infile="input";
-        consfile="input";
-        weightfile="input";
-        msafile="input";
-        outfile="output";
-        b=800000;
-        runs=1;
+        directory  = ".";
+        infile     = "input";
+        consfile   = "input";
+        weightfile = "input";
+        msafile    = "input";
+        outfile    = "output";
         
-        sampleB=1000;
-        gamma=0;
-        nmax=0;
-        pthresh=1e-4;
-        useGamma=false;
-        useGI=false;
-        computeP2=true;
-        computeP3=false;
-        computePThresh=true;
-        useNMax=false;
-        recMSA=false;
-        useVerbose=false;
-        useStart=false;
+        b       = 800000;
+        runs    = 1;
+        sampleB = 1000;
+        gamma   = 0;
+        nmax    = 0;
+        pthresh = 1e-4;
+        
+        useGamma       = false;
+        useGI          = false;
+        computeP2      = true;
+        computeP3      = false;
+        computePThresh = true;
+        useNMax        = false;
+        recMSA         = false;
+        useVerbose     = false;
+        useStart       = false;
     
     }
     
@@ -73,7 +74,7 @@ public:
     std::string getInfileAl()        { return (directory+"/"+msafile+".cmsa");   }
     std::string getConsensusInfile() { return (directory+"/"+consfile+".cons");  }
     std::string getWeights()         { return (directory+"/"+weightfile+".wgt"); }
-    std::string getMOutfile() 	     { return (directory+"/"+outfile+".m");      }
+    std::string getMOutfile()        { return (directory+"/"+outfile+".m");      }
     std::string getP2Outfile()       { return (directory+"/"+outfile+".p2");     }
     std::string getCCOutfile()       { return (directory+"/"+outfile+".c2");     }
     std::string getPKOutfile()       { return (directory+"/"+outfile+".pk");     }
