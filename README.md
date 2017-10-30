@@ -169,24 +169,24 @@ On difficult data sets (for example, systems of very large size, those with many
 - `-t` specifies a single value of the threshold $\theta$ at which the algorithm will run, then exit
 - `-tmax` specifies the maximum (starting) value of the threshold (default: 1)
 - `-tmin` specifies the minimum allowed value of the threshold; the program terminates automatically after $\theta$ falls below this minimum value (default: 1e-10)
-- `-ts` specifies the logarithmic step size to for between successive values $\theta$, through $\theta_{i+1} = \theta_i / \theta_{\rm step}$ (default: 1.05)
-- `-r` enables the expansion of the entropy $S$ around a mean-field reference entropy $S_{0}$, which may be helpful in particular for inferring models described by dense networks of weak interactions (note: works only if all variables are binary)
-- `-g0` sets the $L_0$-norm regularization strength, and turns on $L_0$-norm regularization, enforcing sparsity for Potts couplings (default: 1e-4)
-- `-l0` turns on $L_0$-norm regularization, but **without** setting the regularization strength
+- `-ts` specifies the logarithmic step size to for between successive values $\theta$, through $$\theta_{i+1} = \theta_i / \theta_{\rm step}$ (default: 1.05)
+- `-r` enables the expansion of the entropy $S$ around a mean-field reference entropy $$S_{0}$$, which may be helpful in particular for inferring models described by dense networks of weak interactions (note: works only if all variables are binary)
+- `-g0` sets the \\(L_0\\)-norm regularization strength, and turns on \\(L_0\\)-norm regularization, enforcing sparsity for Potts couplings (default: 1e-4)
+- `-l0` turns on \\(L_0\\)-norm regularization, but **without** setting the regularization strength
 - `-ss` specifies an input "secondary structure" file used to specify the initial set of clusters to consider in the expansion
 - `-lax` enables a laxer cluster construction rule, increasing the number of clusters included in the cluster expansion routine
 
 ### Additional QLS options
 
 - `-c` specifies the set of (true) correlations to compare with for the MC learning routine (default: "input")
-- `-e` sets the maximum tolerable error threshold; the program will run until all of the error terms $$\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<e$$ (default: 1)
+- `-e` sets the maximum tolerable error threshold; the program will run until all of the error terms \\(\epsilon_{p1}, \epsilon_{p2}, \epsilon_{\rm max}<e\\) (default: 1)
 
 ### Additional QGT options
 
 - `-c` specifies the file giving the consensus sequence (default: "input")
 - `-m` specifies the file containing the compressed representation of the data (i.e. the compressed MSA, default: "input")
 - `-w` specifies the file with weights for each configuration in the data (default: "input")
-- `-pthresh` sets the threshold for three-point correlations that will be printed (default: $$10\times \langle p\rangle$$, where $$\langle p \rangle$$ is the average one-point correlation)
+- `-pthresh` sets the threshold for three-point correlations that will be printed (default: \\(10\times \langle p\rangle\\), where \\(\langle p \rangle\\) is the average one-point correlation)
 - `-p3` enables computation and comparison of three-point correlations; note that by default not all correlations are printed (see `-pthresh` option above)
 - `-p3full` enables computation and comparison of three-point correlations and sets `pthresh` to zero
 - `-nmax` set the maximum number of three-point correlations to print, another way to control file size (default: none)
