@@ -46,7 +46,7 @@ Here \\(\delta\\) represents the [Kronecker delta function](http://en.wikipedia.
 \\(p_{1,2}(1,1)\\) \\(p_{1,2}(1,2)\\) ... \\(p_{1,2}(1,q_2-1)\\) \\(p_{1,2}(2,1)\\) \\(p_{1,2}(2,2)\\) ... \\(p_{1,2}(q_1-1,q_2-1)\\)
 \\(p_{1,3}(1,1)\\) ...
 
-In other words, the first \\(N\\) lines of the file record the frequency that each state is observed at each site, and the next \\(N(N-1)/2\\) lines record the pairwise correlations. Note that, because \\(\sum_{a=1}^{q_i} p_i(a)=1\\), the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
+In other words, the first \\(N\\) lines of the file record the frequency that each state is observed at each site, and the next \\(N(N-1)/2\\) lines record the pairwise correlations. Note that, because $$\sum_{a=1}^{q_i} p_i(a)=1\,,$$ the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
 
 These values should be given in floating point or scientific format, with whitespace (e.g. `'\t'`) between successive values and a newline character (`'\n'`) at the end of each line. In order for the correlations to be read in properly, there should be **no** whitespace between the final correlation value and the newline character on each line. 
 
@@ -78,7 +78,7 @@ Output from the first file, `examples/p7-out.sce`, should appear something like 
 ...
 ```
 
-These columns represent, respectively: the current value of the threshold \\(\theta\\), error on the one-point correlations \\(\epsilon_{p1}\\), error on the pairwise correlations \\(\epsilon_{p2}\\), normalized maximum error \\(\epsilon_{\rm max}\\), current estimate of the entropy \\(S\\), maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which \\(| \Delta S |>\theta\\)).
+These columns represent, respectively: the current value of the threshold \\(\theta\\), error on the one-point correlations \\(\epsilon_{p1}\\), error on the pairwise correlations \\(\epsilon_{p2}\\), normalized maximum error \\(\epsilon_{\rm max}\\), current estimate of the entropy \\(S\\), maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which \\(\| \Delta S \|>\theta\\)).
 
 The inferred Potts parameters in the second file, `examples/p7-out.j`, are output in the same format as the input correlations, as shown [above](#required-input). In this case, the first \\(N\\) lines record the Potts fields \\(h_i(a)\\), and the following \\(N(N-1)/2\\) lines record the couplings \\(J_{ij}(a,b)\\).
 
