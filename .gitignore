@@ -1,0 +1,21 @@
+# Local files
+config.h
+config.log
+config.status
+Makefile
+stamp-h1
+autom4te.cache/
+scripts/*.pyc
+scripts/__pycache__/
+
+# Local tests
+temp/
+
+# Executables
+bin/
+
+# Intermediate files
+src/.dirstamp
+src/*.o
+src/.deps/
+tests/
