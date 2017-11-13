@@ -34,18 +34,18 @@ $ make install
 
 Running the algorithm requires a set of correlations as input, to be computed from your data.
 
-As an example, let's consider a system of *N* variables described by the configuration *<u>x</u>* = {*x*<sub>1</sub>, *x*<sub>2</sub>, ..., *x<sub>N</sub>*}, with each variable *x<sub>i</sub>* taking one of *q<sub>i</sub>* possible values, *x<sub>i</sub>*∈{1, 2, ..., *q<sub>i</sub>*}. From a set of *B* observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
+As an example, let's consider a system of *N* variables described by the configuration *<u>x</u>* = {*x*<sub>1</sub>, *x*<sub>2</sub>, ..., *x<sub>N</sub>*}, with each variable *x<sub>i</sub>* taking one of *q<sub>i</sub>* possible values, *x<sub>i</sub>* ∈ {1, 2, ..., *q<sub>i</sub>*}. From a set of *B* observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
 
 \\[p_i(a) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\,,\\]
 \\[p_{ij}(a,b) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\delta(x_j,b)\,.\\]
 
 Here *δ* represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension `.p`, in the following format:
 
-*p*<sub>1</sub>(1) *p*<sub>1</sub>(2) ... *p*<sub>1</sub>(*q*<sub>1<\sub>-1)  
-*p*<sub>2</sub>(1) *p*<sub>2</sub>(2) ... *p*<sub>2</sub>(*q*<sub>2<\sub>-1)  
+*p*<sub>1</sub>(1) *p*<sub>1</sub>(2) ... *p*<sub>1</sub>(*q*<sub>1</sub>-1)  
+*p*<sub>2</sub>(1) *p*<sub>2</sub>(2) ... *p*<sub>2</sub>(*q*<sub>2</sub>-1)  
 ...  
-*p<sub>N</sub>*(1) *p<sub>N</sub>*(2) ... *p<sub>N</sub>*(*q<sub>N<\sub>*-1)  
-*p*<sub>1,2</sub>(1,1) *p*<sub>1,2</sub>(1,2) ... *p*<sub>1,2</sub>(1,*q*<sub>2<\sub>-1) *p*<sub>1,2</sub>(2,1) *p*<sub>1,2</sub>(2,2) ... *p*<sub>1,2</sub>(*q*<sub>1<\sub>-1,*q*<sub>2<\sub>-1)  
+*p<sub>N</sub>*(1) *p<sub>N</sub>*(2) ... *p<sub>N</sub>*(*q<sub>N</sub>*-1)  
+*p*<sub>1,2</sub>(1,1) *p*<sub>1,2</sub>(1,2) ... *p*<sub>1,2</sub>(1,*q*<sub>2</sub>-1) *p*<sub>1,2</sub>(2,1) *p*<sub>1,2</sub>(2,2) ... *p*<sub>1,2</sub>(*q*<sub>1</sub>-1,*q*<sub>2</sub>-1)  
 *p*<sub>1,3</sub>(1,1) ...  
 
 In other words, the first *N* lines of the file record the frequency that each state is observed at each site, and the next *N*(*N*-1)/2 lines record the pairwise correlations. Note that, because \\[\sum_{a=1}^{q_i} p_i(a)=1\,,\\] the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
