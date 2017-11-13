@@ -127,6 +127,11 @@
     The L2 regularization strength. L2 regularization is enabled by setting the 
     regularization strength to a nonzero value using this flag, or by using the
     -ag flag below.
+ 
+ -gh: real number
+    Default: 0.01
+    Multiplier for the L2 regularization strength for fields only. In other words,
+    the L2 regularization strength for fields is g2 * gh.
     
  -gi: none
     Use gauge invariant L2 regularization for couplings.
@@ -191,6 +196,7 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i],"-g0")==0)      { if (++i==argc) break; else { r.gamma0=strtodouble(argv[i]);
                                                                                r.useSparse=true;              } }
         else if (strcmp(argv[i],"-g2")==0)      { if (++i==argc) break; else r.gamma2=strtodouble(argv[i]);     }
+        else if (strcmp(argv[i],"-gh")==0)      { if (++i==argc) break; else r.gammah=strtodouble(argv[i]);     }
         else if (strcmp(argv[i],"-gi")==0)      { r.useGI=true;                                                 }
         
         // Monte Carlo settings

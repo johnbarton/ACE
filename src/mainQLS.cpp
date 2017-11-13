@@ -115,6 +115,7 @@ int main(int argc, char *argv[]) {
         // Regularization strengths and settings
         
         else if (strcmp(argv[i],"-g2")==0)  { if (++i==argc) break; else { r.useGamma=true; r.gamma=strtodouble(argv[i]); } }
+        else if (strcmp(argv[i],"-gh")==0)  { if (++i==argc) break; else r.gammah=strtodouble(argv[i]);                     }
         else if (strcmp(argv[i],"-gi")==0)  { r.useGI=true;                                                                 }
         else if (strcmp(argv[i],"-ag")==0)  { r.useGamma=true;                                                              }
         

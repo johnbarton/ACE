@@ -24,7 +24,7 @@
 
 // GLOBAL VARIABLES
 
-double alpha=0.0;
+double gammah = 0.0;
 
 void (*updateStep_ptr)(const Vector &, const Vector &, const IntVector &, double, double, Vector &, Vector &, Vector &, Vector &);
 
@@ -48,10 +48,10 @@ void updateStep(const Vector &q, const Vector &p, const IntVector &nz, double ga
     for (int i=0;i<N;i++) { for (int a=0;a<q[i].size();a++) {
         
         double K       = J[i][a];
-        double newGrad = p[i][a] - q[i][a] + (2 * alpha * gamma * K);
+        double newGrad = p[i][a] - q[i][a] + (2 * gammah * gamma * K);
             
         // Exponential penalty on very large fields
-        if (fabs(K)>Jcut) newGrad += (alpha * gammaexp * sign(K) * exp(fabs(K))) - (2 * alpha * gamma * K);
+        if (fabs(K)>Jcut) newGrad += (gammah * gammaexp * sign(K) * exp(fabs(K))) - (2 * gammah * gamma * K);
             
         // Only perform step if correlation differs significantly from correct
         //if (isClose(q[i][a], newGrad, B)) weight[i][a] = 1;
@@ -137,10 +137,10 @@ void updateStep_GI(const Vector &q, const Vector &p, const IntVector &nz, double
     for (int i=0;i<N;i++) { for (int a=0;a<q[i].size();a++) {
         
         double K       = J[i][a];
-        double newGrad = p[i][a] - q[i][a] + (2 * alpha * gamma * K);
+        double newGrad = p[i][a] - q[i][a] + (2 * gammah * gamma * K);
             
         // Exponential penalty on very large fields
-        if (fabs(K)>Jcut) newGrad += (alpha * gammaexp * sign(K) * exp(fabs(K))) - (2 * alpha * gamma * K);
+        if (fabs(K)>Jcut) newGrad += (gammah * gammaexp * sign(K) * exp(fabs(K))) - (2 * gammah * gamma * K);
             
         // Only perform step if correlation differs significantly from correct
         //if (isClose(q[i][a], newGrad, B)) weight[i][a] = 1;
@@ -353,6 +353,9 @@ int runLearn(RunParametersQLS &r) {
         if (r.gamma==0) gamma = computeGamma_L2(q,r.sampleB);
         else            gamma = r.gamma;
         
+        if (r.gammah>=0) gammah = r.gammah;
+        else             gammah = 0;
+        
     }
     
     if (r.useVerbose) printf("Got N=%d, len(h[0])=%d\n",N,(int)J[0].size());
@@ -406,7 +409,7 @@ int runLearn(RunParametersQLS &r) {
     int count=0;
     std::vector<double> error(3,0);
     
-    getErrorMCLearn(q, J, expJ, r.sampleB, r.b, r.runs, gamma, alpha, p, error, lattice);
+    getErrorMCLearn(q, J, expJ, r.sampleB, r.b, r.runs, gamma, gammah, p, error, lattice);
     
     // Loop Monte Carlo until convergence
     
@@ -423,7 +426,7 @@ int runLearn(RunParametersQLS &r) {
         
         std::vector<double> lastError(error);
         
-        getErrorMCLearn(q, J, expJ, r.sampleB, r.b, r.runs, gamma, alpha, p, error, lattice);
+        getErrorMCLearn(q, J, expJ, r.sampleB, r.b, r.runs, gamma, gammah, p, error, lattice);
         
         // Output progress
         

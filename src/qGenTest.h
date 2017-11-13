@@ -27,6 +27,7 @@ public:
     
     double sampleB;         // Number of data points in the sample
     double gamma;           // Regularization strength
+    double gammah;          // Regularization strength multiplier for fields
     double nmax;            // (Approximate) maximum number of 3-point correlations to record
     double pthresh;         // Record 3-point correlations larger than this size in absolute value
     bool useGamma;          // If true, use L2 regularization (with strength computed using sampleB and correlations)
@@ -54,6 +55,7 @@ public:
         runs    = 1;
         sampleB = 1000;
         gamma   = 0;
+        gammah  = 0.01;
         nmax    = 0;
         pthresh = 1e-4;
         

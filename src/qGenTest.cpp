@@ -175,11 +175,11 @@ int runGenTest(RunParameters &r) {
     
     // Print epsilon errors before expanding
     
-    double alpha        = 0.01;   // Regularization normalization for fields
+    double gammah       = (r.gammah>=0) ? r.gammah : 0.01;   // Regularization normalization for fields
     double maxPrecision = 1/(r.sampleB);
-    double erelp1       = epsilonP(q, p, N, maxPrecision, J, gamma, alpha);
+    double erelp1       = epsilonP(q, p, N, maxPrecision, J, gamma, gammah);
     double erelp2       = (*epsilonP2_ptr)(q, p, N, maxPrecision, J, gamma);
-    double emax         = (*getMaxError_ptr)( q, p, maxPrecision, J, gamma, alpha);
+    double emax         = (*getMaxError_ptr)( q, p, maxPrecision, J, gamma, gammah);
 
     printf("Relative errors (w/out gauge correlations): P %f, P2 %f MAX %f gamma %f\n",erelp1,erelp2,emax,gamma);
     

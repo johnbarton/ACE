@@ -27,9 +27,9 @@
 // GLOBAL VARIABLES
 
 void (*computeS0andJ0_ptr)(const Vector &, int, double, Vector &, double &);
-void (*computeSandJ_ptr)(const Vector &, int, double, double, Vector &, double &);
-void (*regularizeS_ptr)(const Vector &, double &, Vector &, Vector &, const Vector &, double);
-void (*regularizeS_gradOnly_ptr)(const Vector &, double &, Vector &, const Vector &, double);
+void (*computeSandJ_ptr)(const Vector &, int, double, double, double, Vector &, double &);
+void (*regularizeS_ptr)(const Vector &, double &, Vector &, Vector &, const Vector &, double, double);
+void (*regularizeS_gradOnly_ptr)(const Vector &, double &, Vector &, const Vector &, double, double);
 
 
 
@@ -403,7 +403,7 @@ void computeNewtonStep(const Vector &grad, Vector &hess, std::vector<double> &li
 
 // Forward/backward line search for optimal step size
 
-double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double gamma, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, bool accelerate, double lastAlpha) {
+double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double gamma, double gammah, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, bool accelerate, double lastAlpha) {
    
     // Try the step with initial alpha
     
@@ -422,7 +422,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
     // If necessary adjust alpha to satisfy weak sufficient decrease
     
     optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
     
     int alphaCount = 0;
     bool sufficientDecrease = (tempS<(S + alpha * ARMIJOC * gradDotStep));
@@ -442,7 +442,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
         } }
             
         optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
         
         if (tempS<(S + alpha * ARMIJOC * gradDotStep)) sufficientDecrease=true;
             
@@ -472,7 +472,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
             } }
             
             optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
             
             dotProduct = innerProduct(holdGrad, grad) / (holdGradNorm * L2(grad));
             
@@ -493,7 +493,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
 
 // Forward/backward line search for optimal step size
 
-double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double gamma, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S) {
+double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double gamma, double gammah, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S) {
 
     double c1 = 1.0e-5;
     double c2 = 1.0e+5;
@@ -512,7 +512,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
     if ( (fabs(gradDotStep) < c1 * gradNorm * gradNorm) || (stepNorm > c2 * gradNorm) ) {// || (gradDotStep > 0) ) {
     
         computeDescentStep(holdGrad, sizetolength(J.size()), step);
-        return lineSearch_simple(J, p, step, gamma, holdGrad, grad, tempJ, expJ, S, 0, alpha);
+        return lineSearch_simple(J, p, step, gamma, gammah, holdGrad, grad, tempJ, expJ, S, 0, alpha);
         
     }
     
@@ -534,7 +534,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
     // If necessary adjust alpha to satisfy weak sufficient decrease
     
     optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
     
     int alphaCount = 0;
     bool sufficientDecrease = (tempS<(S + alpha * ARMIJOC * gradDotStep));
@@ -557,7 +557,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
         } }
         
         optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
         
         if (tempS<(S + alpha * ARMIJOC * gradDotStep)) sufficientDecrease=true;
         
@@ -591,7 +591,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
             } }
             
             optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
             
             if (tempS<(S + alpha * ARMIJOC * gradDotStep)) sufficientDecrease=true;
         
@@ -623,7 +623,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
             } }
             
             optimizeS_gradOnly(tempJ, expJ, tempS, grad, p);
-            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
             
             dotProduct = innerProduct(holdGrad, grad) / (holdGradNorm * L2(grad));
             
@@ -645,7 +645,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
 
 // Update couplings according to the specified step direction and step size
 
-void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, double gamma, Vector &grad, Vector &expJ, double &S) {
+void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, double gamma, double gammah, Vector &grad, Vector &expJ, double &S) {
 
     for (int i=0;i<J.size();i++) { for (int j=0;j<J[i].size();j++) {
     
@@ -655,7 +655,7 @@ void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, doub
     } }
             
     optimizeS_gradOnly(J, expJ, S, grad, p);
-    (*regularizeS_gradOnly_ptr)(J, S, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(J, S, grad, p, gamma, gammah);
 
 }
 
@@ -938,7 +938,7 @@ void computeS0andJ0_L2(const Vector &p, int length, double gamma, Vector &J0, do
 
 // Compute S and J by minimizing S^*, subject to L2-norm regularization
 
-void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, Vector &J, double &S) {
+void computeSandJ_L2(const Vector &p, int length, double gamma, double gammah, double unused, Vector &J, double &S) {
 
     // Define and initialize temporary variables
     
@@ -959,7 +959,7 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
     // Do first iteration manually to set J
     
     optimizeS(J, expJ, S, grad, hess, p);
-    (*regularizeS_ptr)(J, S, grad, hess, p, gamma);
+    (*regularizeS_ptr)(J, S, grad, hess, p, gamma, gammah);
     
     Vector holdGrad(grad);
     eps = LInfinity(grad);
@@ -1012,9 +1012,9 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
         for (int i=0;i<J.size();i++) { for (int j=0;j<J[i].size();j++) holdGrad[i][j]=grad[i][j]; }
         
         double alpha;
-        if (descentStep) alpha = lineSearch_simple(J, p, step, gamma, holdGrad, grad, tempJ, expJ, armijoS, 1, lastAlpha);
-        else             alpha = lineSearch_simple(J, p, step, gamma, holdGrad, grad, tempJ, expJ, armijoS, 0, 1);
-        makeStep(J, p, step, alpha, gamma, grad, expJ, S);
+        if (descentStep) alpha = lineSearch_simple(J, p, step, gamma, gammah, holdGrad, grad, tempJ, expJ, armijoS, 1, lastAlpha);
+        else             alpha = lineSearch_simple(J, p, step, gamma, gammah, holdGrad, grad, tempJ, expJ, armijoS, 0, 1);
+        makeStep(J, p, step, alpha, gamma, gammah, grad, expJ, S);
         lastAlpha = alpha;
         
         // Update error and choose the next step type
@@ -1022,7 +1022,7 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
         eps         = LInfinity(grad);
         descentStep = useDescent(grad);
         
-        if (!descentStep && eps>EPSG) { optimizeS(J, expJ, S, grad, hess, p); (*regularizeS_ptr)(J, S, grad, hess, p, gamma); }
+        if (!descentStep && eps>EPSG) { optimizeS(J, expJ, S, grad, hess, p); (*regularizeS_ptr)(J, S, grad, hess, p, gamma, gammah); }
         
         // Update entropy list for relaxed step length choice
         // Switch out of relaxed step choice if optimization takes a long time
@@ -1080,14 +1080,14 @@ void computeSandJ_L2(const Vector &p, int length, double gamma, double unused, V
     // Return S
     
     optimizeS_gradOnly(J, expJ, S, grad, p);
-    (*regularizeS_ptr)(J, S, grad, hess, p, gamma);
+    (*regularizeS_ptr)(J, S, grad, hess, p, gamma, gammah);
     
 }
 
 
 // Modifies the supplied model entropy given a set of couplings, with L2 regularization
 
-void regularizeS_L2(const Vector &J, double &S, Vector &grad, Vector &hess, const Vector &p, double gamma) {
+void regularizeS_L2(const Vector &J, double &S, Vector &grad, Vector &hess, const Vector &p, double gamma, double gammah) {
     
     int length=(int) sizetolength(J.size());
     double gamma_J_squared=0;
@@ -1096,10 +1096,10 @@ void regularizeS_L2(const Vector &J, double &S, Vector &grad, Vector &hess, cons
     
     for (int i=0;i<length;i++) { for (int j=0;j<J[i].size();j++) {
             
-        gamma_J_squared += ALPHA * J[i][j] * J[i][j];
-        grad[i][j]      += 2 * ALPHA * gamma * J[i][j];
+        gamma_J_squared += gammah * J[i][j] * J[i][j];
+        grad[i][j]      += 2 * gammah * gamma * J[i][j];
     
-        hess[hindex(i,i,J.size())][hindex(j,j,J[i].size())] += 2 * ALPHA * gamma;
+        hess[hindex(i,i,J.size())][hindex(j,j,J[i].size())] += 2 * gammah * gamma;
             
     } }
     
@@ -1124,7 +1124,7 @@ void regularizeS_L2(const Vector &J, double &S, Vector &grad, Vector &hess, cons
 
 // Modifies the supplied model entropy given a set of couplings, with L2 regularization
 
-void regularizeS_L2_gradOnly(const Vector &J, double &S, Vector &grad, const Vector &p, double gamma) {
+void regularizeS_L2_gradOnly(const Vector &J, double &S, Vector &grad, const Vector &p, double gamma, double gammah) {
     
     int length=(int) sizetolength(J.size());
     double gamma_J_squared=0;
@@ -1133,8 +1133,8 @@ void regularizeS_L2_gradOnly(const Vector &J, double &S, Vector &grad, const Vec
     
     for (int i=0;i<length;i++) { for (int j=0;j<J[i].size();j++) {
             
-        gamma_J_squared += ALPHA * J[i][j] * J[i][j];
-        grad[i][j]      += 2 * ALPHA * gamma * J[i][j];
+        gamma_J_squared += gammah * J[i][j] * J[i][j];
+        grad[i][j]      += 2 * gammah * gamma * J[i][j];
     
     } }
 
@@ -1156,7 +1156,7 @@ void regularizeS_L2_gradOnly(const Vector &J, double &S, Vector &grad, const Vec
 
 // Modifies the supplied model entropy given a set of couplings, with L2 regularization
 
-void regularizeS_L2_GI(const Vector &J, double &S, Vector &grad, Vector &hess, const Vector &p, double gamma) {
+void regularizeS_L2_GI(const Vector &J, double &S, Vector &grad, Vector &hess, const Vector &p, double gamma, double gammah) {
     
     int length=(int) sizetolength(J.size());
     double gamma_J_squared=0;
@@ -1165,10 +1165,10 @@ void regularizeS_L2_GI(const Vector &J, double &S, Vector &grad, Vector &hess, c
     
     for (int i=0;i<length;i++) { for (int j=0;j<J[i].size();j++) {
             
-        gamma_J_squared += ALPHA * J[i][j] * J[i][j];
-        grad[i][j]      += 2 * ALPHA * gamma * J[i][j];
+        gamma_J_squared += gammah * J[i][j] * J[i][j];
+        grad[i][j]      += 2 * gammah * gamma * J[i][j];
     
-        hess[hindex(i,i,J.size())][hindex(j,j,J[i].size())] += 2 * ALPHA * gamma;
+        hess[hindex(i,i,J.size())][hindex(j,j,J[i].size())] += 2 * gammah * gamma;
             
     } }
 
@@ -1235,7 +1235,7 @@ void regularizeS_L2_GI(const Vector &J, double &S, Vector &grad, Vector &hess, c
 
 // Modifies the supplied model entropy given a set of couplings, with L2 regularization
 
-void regularizeS_L2_gradOnly_GI(const Vector &J, double &S, Vector &grad, const Vector &p, double gamma) {
+void regularizeS_L2_gradOnly_GI(const Vector &J, double &S, Vector &grad, const Vector &p, double gamma, double gammah) {
     
     int length=(int) sizetolength(J.size());
     double gamma_J_squared=0;
@@ -1244,8 +1244,8 @@ void regularizeS_L2_gradOnly_GI(const Vector &J, double &S, Vector &grad, const 
     
     for (int i=0;i<length;i++) { for (int j=0;j<J[i].size();j++) {
             
-        gamma_J_squared += ALPHA * J[i][j] * J[i][j];
-        grad[i][j]      += 2 * ALPHA * gamma * J[i][j];
+        gamma_J_squared += gammah * J[i][j] * J[i][j];
+        grad[i][j]      += 2 * gammah * gamma * J[i][j];
     
     } }
 

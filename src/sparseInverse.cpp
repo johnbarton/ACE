@@ -653,7 +653,7 @@ void computeNewtonStep(const Vector &grad, Vector &hess, std::vector<double> &li
 
 // Forward/backward line search for optimal step size
 
-double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double gamma, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, bool accelerate, double lastAlpha, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins) {
+double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double gamma, double gammah, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, bool accelerate, double lastAlpha, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins) {
    
     // Try the step with initial alpha
     
@@ -683,7 +683,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
     // If necessary adjust alpha to satisfy weak sufficient decrease
     
     optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
     
     int alphaCount = 0;
     bool sufficientDecrease = (tempS<(S + alpha * ARMIJOC * gradDotStep));
@@ -703,7 +703,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
         } }
             
         optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
         
         if (tempS<(S + alpha * ARMIJOC * gradDotStep)) sufficientDecrease=true;
             
@@ -733,7 +733,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
             } }
             
             optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
             
             dotProduct = innerProduct(holdGrad, grad, workingSet) / (holdGradNorm * L2(grad, workingSet));
             
@@ -754,7 +754,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
 
 // Forward/backward line search for optimal step size
 
-double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double gamma, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins) {
+double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double gamma, double gammah, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins) {
 
     // Try the step with initial alpha
     
@@ -783,7 +783,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
     // If necessary adjust alpha to satisfy weak sufficient decrease
     
     optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
     
     int alphaCount = 0;
     bool sufficientDecrease = (tempS<(S + alpha * ARMIJOC * gradDotStep));
@@ -803,7 +803,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
         } }
             
         optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
         
         if (tempS<(S + alpha * ARMIJOC * gradDotStep)) sufficientDecrease=true;
             
@@ -833,7 +833,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
             } }
             
             optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+            (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
             
             dotProduct = innerProduct(holdGrad, grad, workingSet) / (holdGradNorm * L2(grad, workingSet));
             
@@ -854,7 +854,7 @@ double lineSearch_simple(const Vector &J, const Vector &p, Vector &step, double 
 
 // Forward/backward line search for optimal step size
 
-double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double gamma, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins, double armijoS) {
+double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double gamma, double gammah, const Vector &holdGrad, Vector &grad, Vector &tempJ, Vector &expJ, double S, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins, double armijoS) {
 
     double c1 = 1.0e-5;
     double c2 = 1.0e+5;
@@ -873,7 +873,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
     if ( (fabs(gradDotStep) < c1 * gradNorm * gradNorm) || (stepNorm > c2 * gradNorm) ) {
     
         computeDescentStep(holdGrad, sizetolength(J.size()), step, workingSet);
-        return lineSearch_simple(J, p, step, gamma, holdGrad, grad, tempJ, expJ, S, workingSet, interactingSpins, independentSpins);
+        return lineSearch_simple(J, p, step, gamma, gammah, holdGrad, grad, tempJ, expJ, S, workingSet, interactingSpins, independentSpins);
         
     }
     
@@ -895,7 +895,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
     // If necessary adjust alpha to satisfy weak sufficient decrease
     
     optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
     
     int alphaCount = 0;
     bool sufficientDecrease = (tempS<(armijoS + alpha * ARMIJOC * gradDotStep));
@@ -915,7 +915,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
         } }
             
         optimizeS_gradOnly(tempJ, expJ, tempS, grad, p, interactingSpins, independentSpins);
-        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma);
+        (*regularizeS_gradOnly_ptr)(tempJ, tempS, grad, p, gamma, gammah);
         
         if (tempS<(armijoS + alpha * ARMIJOC * gradDotStep)) sufficientDecrease=true;
             
@@ -930,7 +930,7 @@ double lineSearch_interp(const Vector &J, const Vector &p, Vector &step, double 
 
 // Update couplings according to the specified step direction and step size (sparse version)
 
-void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, double gamma, Vector &grad, Vector &expJ, double &S, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins) {
+void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, double gamma, double gammah, Vector &grad, Vector &expJ, double &S, const IntVector &workingSet, const IntVector &interactingSpins, const IntVector &independentSpins) {
 
     for (int i=0;i<workingSet.size();i++) { for (int j=0;j<workingSet[i].size();j++) {
     
@@ -940,7 +940,7 @@ void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, doub
     } }
     
     optimizeS_gradOnly(J, expJ, S, grad, p, interactingSpins, independentSpins);
-    (*regularizeS_gradOnly_ptr)(J, S, grad, p, gamma);
+    (*regularizeS_gradOnly_ptr)(J, S, grad, p, gamma, gammah);
 
 }
 
@@ -965,7 +965,7 @@ void makeStep(Vector &J, const Vector &p, const Vector &step, double alpha, doub
 
 // Compute S and J by minimizing S^*, subject to L0 + L2-norm regularization
 
-void computeSandJ_L0(const Vector &p, int length, double gamma, double gamma0, Vector &J, double &S) {
+void computeSandJ_L0(const Vector &p, int length, double gamma, double gammah, double gamma0, Vector &J, double &S) {
 
     // This routine is a controller for the L0 regularization procedure. The idea is to iteratively try minimize the entropy
     // with different sets of couplings according to a backtracking algorithm. gamma0 is the penalty for nonzero couplings.
@@ -996,7 +996,7 @@ void computeSandJ_L0(const Vector &p, int length, double gamma, double gamma0, V
     
     // Get starting entropy
     
-    computeSandJ_L2_sparse(p, length, gamma, J, S, workingSet, expJ, tempJ, step, grad, holdGrad, hess, linearHess, inverseC, inverseN, inverseD);
+    computeSandJ_L2_sparse(p, length, gamma, gammah, J, S, workingSet, expJ, tempJ, step, grad, holdGrad, hess, linearHess, inverseC, inverseN, inverseD);
     
     double tryS=S;
     Vector tryJ(J);
@@ -1046,7 +1046,7 @@ void computeSandJ_L0(const Vector &p, int length, double gamma, double gamma0, V
             // Add new coupling and get cluster entropy
         
             insertInPlace(workingSet[addCouplings[i][0]],addCouplings[i][1]);
-            computeSandJ_L2_sparse(p, length, gamma, tryJ, tryS, workingSet, expJ, tempJ, step, tryGrad, holdGrad, hess, linearHess, inverseC, inverseN, inverseD);
+            computeSandJ_L2_sparse(p, length, gamma, gammah, tryJ, tryS, workingSet, expJ, tempJ, step, tryGrad, holdGrad, hess, linearHess, inverseC, inverseN, inverseD);
             
             // If entropy drops significantly, accept step and restart
             
@@ -1131,7 +1131,7 @@ void computeSandJ_L0(const Vector &p, int length, double gamma, double gamma0, V
             tryJ[removeCouplings[i][0]][removeCouplings[i][1]]=0;
             eraseInPlace(workingSet[removeCouplings[i][0]],removeCouplings[i][1]);
             
-            computeSandJ_L2_sparse(p, length, gamma, tryJ, tryS, workingSet, expJ, tempJ, step, tryGrad, holdGrad, hess, linearHess, inverseC, inverseN, inverseD);
+            computeSandJ_L2_sparse(p, length, gamma, gammah, tryJ, tryS, workingSet, expJ, tempJ, step, tryGrad, holdGrad, hess, linearHess, inverseC, inverseN, inverseD);
             
             // If entropy does not increase significantly, remove coupling and restart
             
@@ -1178,7 +1178,7 @@ void computeSandJ_L0(const Vector &p, int length, double gamma, double gamma0, V
 
 // Compute S and J by minimizing S^*, subject to L2-norm regularization (sparse version)
 
-void computeSandJ_L2_sparse(const Vector &p, int length, double gamma, Vector &J, double &S, const IntVector &workingSet, Vector &expJ, Vector &tempJ, Vector &step, Vector &grad, Vector &holdGrad, Vector &hess, std::vector<double> &linearHess, std::vector<double> &inverseC, std::vector<double> &inverseN, std::vector<double> &inverseD) {
+void computeSandJ_L2_sparse(const Vector &p, int length, double gamma, double gammah, Vector &J, double &S, const IntVector &workingSet, Vector &expJ, Vector &tempJ, Vector &step, Vector &grad, Vector &holdGrad, Vector &hess, std::vector<double> &linearHess, std::vector<double> &inverseC, std::vector<double> &inverseN, std::vector<double> &inverseD) {
     
     // Define and initialize temporary variables
     
@@ -1202,7 +1202,7 @@ void computeSandJ_L2_sparse(const Vector &p, int length, double gamma, Vector &J
     // Get initial values
     
     optimizeS(J, expJ, S, grad, hess, p, interactingSpins, independentSpins);
-    (*regularizeS_ptr)(J, S, grad, hess, p, gamma);
+    (*regularizeS_ptr)(J, S, grad, hess, p, gamma, gammah);
     
     eps = LInfinity(grad, workingSet);
     
@@ -1272,9 +1272,9 @@ void computeSandJ_L2_sparse(const Vector &p, int length, double gamma, Vector &J
         for (int i=0;i<workingSet.size();i++) { for (int j=0;j<workingSet[i].size();j++) { holdGrad[i][workingSet[i][j]]=grad[i][workingSet[i][j]]; } }
         
         double alpha;
-        if (descentStep) alpha = lineSearch_simple(J, p, step, gamma, holdGrad, grad, tempJ, expJ, armijoS, 1, lastAlpha, workingSet, interactingSpins, independentSpins);
-        else             alpha = lineSearch_simple(J, p, step, gamma, holdGrad, grad, tempJ, expJ, armijoS, 0, 1, workingSet, interactingSpins, independentSpins);
-        makeStep(J, p, step, alpha, gamma, grad, expJ, S, workingSet, interactingSpins, independentSpins);
+        if (descentStep) alpha = lineSearch_simple(J, p, step, gamma, gammah, holdGrad, grad, tempJ, expJ, armijoS, 1, lastAlpha, workingSet, interactingSpins, independentSpins);
+        else             alpha = lineSearch_simple(J, p, step, gamma, gammah, holdGrad, grad, tempJ, expJ, armijoS, 0, 1, workingSet, interactingSpins, independentSpins);
+        makeStep(J, p, step, alpha, gamma, gammah, grad, expJ, S, workingSet, interactingSpins, independentSpins);
         lastAlpha = alpha;
         
         // Update error and choose the next step type
@@ -1284,7 +1284,7 @@ void computeSandJ_L2_sparse(const Vector &p, int length, double gamma, Vector &J
         
         //if (alpha<1e-8 && descentStep) descentStep=false;
         
-        if (!descentStep && eps>EPSG) { optimizeS(J, expJ, S, grad, hess, p, interactingSpins, independentSpins); (*regularizeS_ptr)(J, S, grad, hess, p, gamma); }
+        if (!descentStep && eps>EPSG) { optimizeS(J, expJ, S, grad, hess, p, interactingSpins, independentSpins); (*regularizeS_ptr)(J, S, grad, hess, p, gamma, gammah); }
         
         // Update entropy list for relaxed step length choice
         
@@ -1377,7 +1377,7 @@ void computeSandJ_L2_sparse(const Vector &p, int length, double gamma, Vector &J
     // Return S
     
     optimizeS_gradOnly(J, expJ, S, grad, p, interactingSpins, independentSpins);
-    (*regularizeS_ptr)(J, S, grad, hess, p, gamma);
+    (*regularizeS_ptr)(J, S, grad, hess, p, gamma, gammah);
     
 }
 

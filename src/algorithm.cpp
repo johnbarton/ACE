@@ -19,6 +19,7 @@
 int    N      = 0; // total number of spins
 double gamma0 = 0; // strength of the L0 regularization
 double gamma2 = 0; // strength of the L2 regularization
+double gammah = 0; // regularization multiplier for fields
 
 int storageSize = 8*sizeof(unsigned long); // number of spins which can be held in a single storage position of the key
 int keySize     = 0;                       // number of entries necessary on the key to hold information on all spins
@@ -252,15 +253,15 @@ void makeCluster(Cluster &cluster, const Key &key, int clusterSize) {
     
     double dS = 0;
     
-    (*computeS0andJ0_ptr)(p,clusterSize,gamma2,dJ,dS);
-    if (clusterSize>1) computeDSandDJ(spins,clusterSize,dJ,dS);
+    (*computeS0andJ0_ptr)(p, clusterSize, gamma2, dJ, dS);
+    if (clusterSize>1) computeDSandDJ(spins, clusterSize, dJ, dS);
     
     Vector J(dJ);
     double S=0;
     
-    (*computeSandJ_ptr)(p,clusterSize,gamma2,gamma0,J,S);
+    (*computeSandJ_ptr)(p, clusterSize, gamma2, gammah, gamma0, J, S);
     for (int i=0;i<cluster.dJ.size();i++) { for (int j=0;j<cluster.dJ[i].size();j++) cluster.dJ[i][j]=(J[i][j]-dJ[i][j]); }
-    cluster.dS=S-dS;
+    cluster.dS = S-dS;
 
 }
 
@@ -693,9 +694,11 @@ int run(RunParameters &r) {
     if (r.thetaStep<1) { RunParameters rDefault; r.thetaStep = rDefault.thetaStep; }
     if (r.gamma0<0)    { RunParameters rDefault; r.gamma0    = rDefault.gamma0;    }
     if (r.gamma2<0)    { RunParameters rDefault; r.gamma2    = rDefault.gamma2;    }
+    if (r.gammah<0)    { RunParameters rDefault; r.gammah    = rDefault.gammah;    }
     
-    gamma0=r.gamma0;
-    gamma2=r.gamma2;
+    gamma0 = r.gamma0;
+    gamma2 = r.gamma2;
+    gammah = r.gammah;
     
     bool isBinary = true;
     for (int i=0;i<correlations.size();i++) {
@@ -732,7 +735,7 @@ int run(RunParameters &r) {
     
 	if (r.useVerbose) {
     
-        printf("Inferring Ising model couplings using theta = %.8e, \t gamma0 = %.8e, \t gamma2 = %.8e...\n",theta,gamma0,gamma2);
+        printf("Inferring Ising model couplings using theta = %.4e,\tgamma0 = %.4e,\tgamma2 = %.4e,\tgammah = %.4e...\n",theta,gamma0,gamma2,gammah);
         if (r.useSparse) printf("L0 regularization is enabled\n");
         printf("Minimum cluster size = %d, maximum cluster size = %d\n",r.kmin,r.kmax);
         printf("Storage size = %d, key size = %d\n\n",storageSize,keySize);
@@ -829,7 +832,7 @@ int run(RunParameters &r) {
     Vector finalJ0(correlations.size(),std::vector<double>());
     for (int i=0;i<correlations.size();i++) finalJ0[i].resize(correlations[i].size(),0);
     double finalS0=0;
-    (*computeS0andJ0_ptr)(correlations,N,gamma2,finalJ0,finalS0);
+    (*computeS0andJ0_ptr)(correlations, N, gamma2, finalJ0, finalS0);
     
     Vector finalJ(finalJ0);
     double finalS=finalS0;
@@ -845,7 +848,7 @@ int run(RunParameters &r) {
     
     unsigned long lastNumSignificantClusters=numSignificantClusters;
     
-    getError(correlations, finalJ, N, r.sampleB, r.b, r.runs, gamma2, ALPHA, error);
+    getError(correlations, finalJ, N, r.sampleB, r.b, r.runs, gamma2, gammah, error);
     
     // While errors are > 1, lower threshold and loop
     
@@ -960,7 +963,7 @@ int run(RunParameters &r) {
         
         // Compute error again if the number of significant clusters has changed
         
-        if (numSignificantClusters!=lastNumSignificantClusters) getError(correlations, finalJ, N, r.sampleB, r.b, r.runs, gamma2, ALPHA, error);
+        if (numSignificantClusters!=lastNumSignificantClusters) getError(correlations, finalJ, N, r.sampleB, r.b, r.runs, gamma2, gammah, error);
         
         lastNumSignificantClusters=numSignificantClusters;
         

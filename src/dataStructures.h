@@ -80,6 +80,7 @@ public:
     double sampleB;         // Number of samples used to compute correlations from data
     double gamma0;          // Reference entropy regularization strength
     double gamma2;          // Cluster entropy regularization strength
+    double gammah;          // L2 regularization strength multiplier for fields
     double thetaMin;        // The minimum cutoff value (loop starts here)
     double thetaMax;        // The maximum cutoff value (loop ends here)
     double recordStep;      // Step size when recording final data
@@ -112,6 +113,7 @@ public:
         sampleB    = 1000;
         gamma0     = 1.0e-4;
         gamma2     = 0.0;
+        gammah     = 0.01;
         thetaMin   = 1.0e-10;
         thetaMax   = 1.0e+0;
         thetaStep  = 1.05;

@@ -26,6 +26,7 @@ public:
     
     double sampleB;         // Number of data points in the sample
     double gamma;           // Regularization strength
+    double gammah;          // Regularization strength multiplier for fields
     bool useGamma;          // If true, use L2 regularization (with strength computed using sampleB and correlations)
     bool useGI;             // If true, use gauge invariant regularization for couplings
 
@@ -41,26 +42,27 @@ public:
     
     RunParametersQLS() {
         
-        directory=".";
-        infile="input";
-        outfile="output";
-        compfile="input";
-        b=800000;
-        runs=1;
-        epsilon=1.0;
+        directory = ".";
+        infile    = "input";
+        outfile   = "output";
+        compfile  = "input";
+        b         = 800000;
+        runs      = 1;
+        epsilon   = 1.0;
         
-        sampleB=1000;
-        gamma=0;
-        useGamma=false;
-        useGI=false;
+        sampleB  = 1000;
+        gamma    = 0;
+        gammah   = 0.01;
+        useGamma = false;
+        useGI    = false;
         
-        a=2.0;
-        d=0.5;
-        s=0.001;
-        useSparse=true;
+        a         = 2.0;
+        d         = 0.5;
+        s         = 0.001;
+        useSparse = true;
         
-        useStart=false;
-        useVerbose=false;
+        useStart   = false;
+        useVerbose = false;
         
     }
     std::string getInfile()              { return (directory+"/"+infile+".j");      }
