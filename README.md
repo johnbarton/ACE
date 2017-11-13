@@ -34,19 +34,19 @@ $ make install
 
 Running the algorithm requires a set of correlations as input, to be computed from your data.
 
-As an example, let's consider a system of *N* variables described by the configuration *<u>x</u>* = {*x*<sub>1</sub>, *x*<sub>2</sub>, ..., *x<sub>N</sub>*}, with each variable *x<sub>i</sub>* taking one of *q<sub>i</sub>* possible values, \\(x_i\in\{1,2,\ldots,q_i\}\\). From a set of *B* observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
+As an example, let's consider a system of *N* variables described by the configuration *<u>x</u>* = {*x*<sub>1</sub>, *x*<sub>2</sub>, ..., *x<sub>N</sub>*}, with each variable *x<sub>i</sub>* taking one of *q<sub>i</sub>* possible values, *x<sub>i</sub>*∈{1, 2, ..., *q<sub>i</sub>*}. From a set of *B* observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
 
 \\[p_i(a) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\,,\\]
 \\[p_{ij}(a,b) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\delta(x_j,b)\,.\\]
 
 Here *δ* represents the [Kronecker delta function](http://en.wikipedia.org/wiki/Kronecker_delta). These correlations should be saved in a file ending with the extension `.p`, in the following format:
 
-\\(p_1(1)\\) \\(p_1(2)\\) ... \\(p_1(q_1-1)\\)  
-\\(p_2(1)\\) \\(p_2(2)\\) ... \\(p_2(q_2-1)\\)  
+*p*<sub>1</sub>(1) *p*<sub>1</sub>(2) ... *p*<sub>1</sub>(*q*<sub>1<\sub>-1)  
+*p*<sub>2</sub>(1) *p*<sub>2</sub>(2) ... *p*<sub>2</sub>(*q*<sub>2<\sub>-1)  
 ...  
-\\(p_N(1)\\) \\(p_N(2)\\) ... \\(p_N(q_N-1)\\)  
-\\(p_{1,2}(1,1)\\) \\(p_{1,2}(1,2)\\) ... \\(p_{1,2}(1,q_2-1)\\) \\(p_{1,2}(2,1)\\) \\(p_{1,2}(2,2)\\) ... \\(p_{1,2}(q_1-1,q_2-1)\\)  
-\\(p_{1,3}(1,1)\\) ...  
+*p<sub>N</sub>*(1) *p<sub>N</sub>*(2) ... *p<sub>N</sub>*(*q<sub>N<\sub>*-1)  
+*p*<sub>1,2</sub>(1,1) *p*<sub>1,2</sub>(1,2) ... *p*<sub>1,2</sub>(1,*q*<sub>2<\sub>-1) *p*<sub>1,2</sub>(2,1) *p*<sub>1,2</sub>(2,2) ... *p*<sub>1,2</sub>(*q*<sub>1<\sub>-1,*q*<sub>2<\sub>-1)  
+*p*<sub>1,3</sub>(1,1) ...  
 
 In other words, the first *N* lines of the file record the frequency that each state is observed at each site, and the next *N*(*N*-1)/2 lines record the pairwise correlations. Note that, because \\[\sum_{a=1}^{q_i} p_i(a)=1\,,\\] the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
 
@@ -80,7 +80,7 @@ Output from the first file, `examples/p7-out.sce`, should appear something like 
 ...
 ```
 
-These columns represent, respectively: the current value of the threshold *θ*, error on the one-point correlations *ε<sub>p1</sub>*, error on the pairwise correlations *ε<sub>p2</sub>*, normalized maximum error *ε*<sub>max</sub>, current estimate of the entropy *S*, maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which |*ΔS*|>*θ*.
+These columns represent, respectively: the current value of the threshold *θ*, error on the one-point correlations *ε<sub>p1</sub>*, error on the pairwise correlations *ε<sub>p2</sub>*, normalized maximum error *ε*<sub>max</sub>, current estimate of the entropy *S*, maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which &#124;*ΔS*&#124;>*θ*.
 
 The inferred Potts parameters in the second file, `examples/p7-out.j`, are output in the same format as the input correlations, as shown [above](#required-input). In this case, the first *N* lines record the Potts fields *h<sub>i</sub>*(*a*), and the following *N*(*N*-1)/2 lines record the couplings *J<sub>ij</sub>*(*a*,*b*).
 
