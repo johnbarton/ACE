@@ -77,6 +77,8 @@ public:
     
     int kmin;               // Minimum cluster size before computation is truncated
     int kmax;               // Maximum cluster size before computation is truncated
+    int knmaxk;             // k parameter for cluster truncation rule (stop when >= n clusters of size k found)
+    int knmaxn;             // n parameter for cluster truncation rule (stop when >= n clusters of size k found)
     double sampleB;         // Number of samples used to compute correlations from data
     double gamma0;          // Reference entropy regularization strength
     double gamma2;          // Cluster entropy regularization strength
@@ -110,6 +112,8 @@ public:
         
         kmin       = 0;
         kmax       = 0;
+        knmaxk     = 0;
+        knmaxn     = 1;
         sampleB    = 1000;
         gamma0     = 1.0e-4;
         gamma2     = 0.0;

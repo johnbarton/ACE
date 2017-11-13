@@ -18,7 +18,7 @@ double computeGamma_L2(const Vector &, double);
 // Main algorithm
 void selectClusters(std::set<Key> &, int, int, int, int, double, bool, FILE *);
 void getClusters(std::set<Key> &, int &, int, double, bool, bool, const std::vector<int> &, FILE *);
-void getCouplings(Vector &, double &, unsigned long &, double);
+void getCouplings(Vector &, double &, unsigned long &, bool &, int, int, double);
 int run(RunParameters &);
 
 

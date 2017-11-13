@@ -167,6 +167,7 @@ Please contact us for more information or advice on dealing with difficult data 
 
 - `-kmin` sets the minimum cluster size required before the program will terminate (default: 0)
 - `-kmax` sets the maximum cluster size; the program terminates automatically after a cluster of this size is created (default: none)
+- `-knmax` stops the program when *n* (second input) or more clusters of size *k* (first input) are selected; for example, to halt when 10 clusters of size 2 are selected, use `-knmax 2 10` (default: none)  
 - `-t` specifies a single value of the threshold *θ* at which the algorithm will run, then exit
 - `-tmax` specifies the maximum (starting) value of the threshold (default: 1)
 - `-tmin` specifies the minimum allowed value of the threshold; the program terminates automatically after *θ* falls below this minimum value (default: 1e-10)

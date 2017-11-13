@@ -77,6 +77,11 @@
     Maximum cluster size. The algorithm will halt when clusters of this
     size are selected.
  
+ -knmax: integer integer
+    Default: none
+    Halt the algorithm when >= n clusters (second integer) of
+    size k (first integer) are selected.
+ 
  -t: real number
     Default: none
     Run the algorithm at the input value of theta, in scientific or
@@ -179,6 +184,8 @@ int main(int argc, char *argv[]) {
         
         else if (strcmp(argv[i],"-kmin")==0)    { if (++i==argc) break; else r.kmin=strtoint(argv[i]);          }
         else if (strcmp(argv[i],"-kmax")==0)    { if (++i==argc) break; else r.kmax=strtoint(argv[i]);          }
+        else if (strcmp(argv[i],"-knmax")==0)   { if (++i==argc) break; else r.knmaxk=strtoint(argv[i]);
+                                                  if (++i==argc) break; else r.knmaxn=strtoint(argv[i]);        }
         else if (strcmp(argv[i],"-t")==0)       { if (++i==argc) break; else { r.thetaMax=strtodouble(argv[i]);
                                                                              r.thetaMin=strtodouble(argv[i]); } }
         else if (strcmp(argv[i],"-tmin")==0)    { if (++i==argc) break; else r.thetaMin=strtodouble(argv[i]);   }

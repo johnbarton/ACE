@@ -465,7 +465,7 @@ void selectClusters(std::set<Key> &clusters, int clusterSize, int spinCutSize, i
 
 // Build the list of clusters
 
-void getClusters(std::set<Key> &clusters, int &maxClusterSize, int kmax, double theta, bool lax, bool useVerbose, const std::vector<int> &allowedSites,FILE *output) {
+void getClusters(std::set<Key> &clusters, int &maxClusterSize, int kmax, double theta, bool lax, bool useVerbose, const std::vector<int> &allowedSites, FILE *output) {
 
     // Form all allowed pair clusters
     
@@ -545,8 +545,10 @@ void getClusters(std::set<Key> &clusters, int &maxClusterSize, int kmax, double 
 
 // Iterate through the map of clusters to obtain final couplings
 
-void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantClusters, double theta) {
+void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantClusters, bool &clusterPass, int knmaxk, int knmaxn, double theta) {
 
+    int kn = 0;          // total number of significant clusters of size k
+    clusterPass = true;  // if true, maximum number of clusters of size k has not been exceeded
     Key subsetKey(keySize,0);
 
     for (std::map<Key,Cluster>::iterator i=(*clusterIndex).begin();i!=(*clusterIndex).end();++i) {
@@ -558,6 +560,7 @@ void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantC
             // Map cluster to the whole system
             
             int clusterSize = sizetolength((*i).second.dJ.size());
+            if (clusterSize==knmaxk) kn++;
             int spins[clusterSize];
             
             int n=0;
@@ -640,6 +643,10 @@ void getCouplings(Vector &finalJ, double &finalS, unsigned long &numSignificantC
 		}
         
 	}
+ 
+    // Check if number of selected clusters of size k is over limit (knmaxn)
+
+    if (kn >= knmaxn) clusterPass = false;
 
 }
 
@@ -682,7 +689,9 @@ int run(RunParameters &r) {
     
     // Set kmax to the system size, if no specific maximum size is given 
     
-    if (r.kmax<=0) r.kmax=N;
+    if (r.kmax<=0)   r.kmax   = N;
+    if (r.knmaxk<=0) r.knmaxk = N;
+    if (r.knmaxn<=0) r.knmaxn = 1;
     
     // Sanity checks on theta and gamma input
     
@@ -839,8 +848,9 @@ int run(RunParameters &r) {
     
     unsigned long numSignificantClusters=0;
     unsigned long numClusters=(*clusterIndex).size();
+    bool clusterPass = true;
     
-    getCouplings(finalJ, finalS, numSignificantClusters, theta);
+    getCouplings(finalJ, finalS, numSignificantClusters, clusterPass, r.knmaxk, r.knmaxn, theta);
     
     // CHECK ERROR
     
@@ -857,7 +867,7 @@ int run(RunParameters &r) {
     std::vector<double> minError(3,1000);    
     double recTheta=theta;
     
-    while ( (error[0]>1 || error[1]>1 || error[2]>1 || maxClusterSize<r.kmin) && maxClusterSize<r.kmax && theta>r.thetaMin && r.inputClusters==false) {
+    while ( (error[0]>1 || error[1]>1 || error[2]>1 || maxClusterSize<r.kmin) && clusterPass && maxClusterSize<r.kmax && theta>r.thetaMin && r.inputClusters==false) {
         
         // First record data
         
@@ -953,19 +963,19 @@ int run(RunParameters &r) {
         
         if (r.useVerbose) printf("Found all significant clusters at threshold %.8e. Getting final couplings.\n",theta);
         
-        finalS=finalS0;
-        for (int i=0;i<finalJ.size();i++) { for (int j=0;j<finalJ[i].size();j++) finalJ[i][j]=finalJ0[i][j]; }
+        finalS = finalS0;
+        for (int i=0;i<finalJ.size();i++) { for (int j=0;j<finalJ[i].size();j++) finalJ[i][j] = finalJ0[i][j]; }
         
-        numSignificantClusters=0;
-        numClusters=(*clusterIndex).size();
+        numSignificantClusters = 0;
+        numClusters = (*clusterIndex).size();
         
-        getCouplings(finalJ, finalS, numSignificantClusters, theta);
+        getCouplings(finalJ, finalS, numSignificantClusters, clusterPass, r.knmaxk, r.knmaxn, theta);
         
         // Compute error again if the number of significant clusters has changed
         
         if (numSignificantClusters!=lastNumSignificantClusters) getError(correlations, finalJ, N, r.sampleB, r.b, r.runs, gamma2, gammah, error);
         
-        lastNumSignificantClusters=numSignificantClusters;
+        lastNumSignificantClusters = numSignificantClusters;
         
     }
     
