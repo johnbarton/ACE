@@ -1,6 +1,6 @@
 [![Build Status](https://img.shields.io/travis/johnbarton/ACE.svg?style=flat-square)](https://travis-ci.org/johnbarton/ACE) [![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtw328-blue.svg?style=flat-square)](https://doi.org/10.1093/bioinformatics/btw328)
 
-# ACE 
+# ACE
 
 # Table of contents
 
@@ -34,7 +34,7 @@ $ make install
 
 Running the algorithm requires a set of correlations as input, to be computed from your data.
 
-As an example, let's consider a system of \\(N\\) variables described by the configuration \\(\underline{x}=\{x_1, x_2,\ldots,x_N\}\\), with each variable \\(x_i\\) taking one of \\(q_i\\) possible values, \\(x_i\in\{1,2,\ldots,q_i\}\\). From a set of \\(B\\) observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
+As an example, let's consider a system of *N* variables described by the configuration \\(\underline{x}=\{x_1, x_2,\ldots,x_N\}\\), with each variable \\(x_i\\) taking one of \\(q_i\\) possible values, \\(x_i\in\{1,2,\ldots,q_i\}\\). From a set of *B* observations of the system, we can compute the frequency of each variable as well as the pairwise correlations,
 
 \\[p_i(a) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\,,\\]
 \\[p_{ij}(a,b) = \frac{1}{B}\sum_{k=1}^{B}\delta(x_i,a)\delta(x_j,b)\,.\\]
@@ -53,9 +53,9 @@ Here \\(\delta\\) represents the [Kronecker delta function](http://en.wikipedia.
 
 \\(p_{1,3}(1,1)\\) ...
 
-In other words, the first \\(N\\) lines of the file record the frequency that each state is observed at each site, and the next \\(N(N-1)/2\\) lines record the pairwise correlations. Note that, because \\[\sum_{a=1}^{q_i} p_i(a)=1\,,\\] the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
+In other words, the first *N* lines of the file record the frequency that each state is observed at each site, and the next *N(N-1)/2* lines record the pairwise correlations. Note that, because \\[\sum_{a=1}^{q_i} p_i(a)=1\,,\\] the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
 
-These values should be given in floating point or scientific format, with whitespace (e.g. `'\t'`) between successive values and a newline character (`'\n'`) at the end of each line. In order for the correlations to be read in properly, there should be **no** whitespace between the final correlation value and the newline character on each line. 
+These values should be given in floating point or scientific format, with whitespace (e.g. `'\t'`) between successive values and a newline character (`'\n'`) at the end of each line. In order for the correlations to be read in properly, there should be **no** whitespace between the final correlation value and the newline character on each line.
 
 For examples, see the `examples/` directory. Instructions on how to automatically generate correlations from a sequence alignment in FASTA format (and others) can be found in the Matlab file in the `scripts/` directory. The correlations can also be prepared through a set of Python scripts, `scripts/ACEtools.py`, which also includes useful auxiliary functions.
 
@@ -85,9 +85,9 @@ Output from the first file, `examples/p7-out.sce`, should appear something like 
 ...
 ```
 
-These columns represent, respectively: the current value of the threshold \\(\theta\\), error on the one-point correlations \\(\epsilon_{p1}\\), error on the pairwise correlations \\(\epsilon_{p2}\\), normalized maximum error \\(\epsilon_{\rm max}\\), current estimate of the entropy \\(S\\), maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which \\(\| \Delta S \|>\theta\\)).
+These columns represent, respectively: the current value of the threshold \\(\theta\\), error on the one-point correlations \\(\epsilon_{p1}\\), error on the pairwise correlations \\(\epsilon_{p2}\\), normalized maximum error \\(\epsilon_{\rm max}\\), current estimate of the entropy *S*, maximum cluster size, total number of clusters in the expansion, and the number of selected clusters (i.e. those for which \\(\| \Delta S \|>\theta\\)).
 
-The inferred Potts parameters in the second file, `examples/p7-out.j`, are output in the same format as the input correlations, as shown [above](#required-input). In this case, the first \\(N\\) lines record the Potts fields \\(h_i(a)\\), and the following \\(N(N-1)/2\\) lines record the couplings \\(J_{ij}(a,b)\\).
+The inferred Potts parameters in the second file, `examples/p7-out.j`, are output in the same format as the input correlations, as shown [above](#required-input). In this case, the first *N* lines record the Potts fields *h<sub>i</sub>(a)*, and the following *N(N-1)/2* lines record the couplings *J<sub>ij</sub>(a,b)*.
 
 The final line of `examples/p7-out.sce` should then appear something like:
 
@@ -124,7 +124,7 @@ After about 15 iterations the MC learning algorithm should converge and the prog
 
 ### Verifying the output with QGT
 
-If the input correlations are generated using the matlab script included in this package (for instructions, see the script itself, which lies in the `scripts/` directory), auxiliary measurements such as higher order correlations can be checked comprehensively. By default, this routine compares the one- and two-point correlations for the model and data, as well as the probability \\(P(k)\\) of observing \\(k\\) differences between sampled configurations and the "consensus" (determined from input read in to the program). It is also possible to compute the three-point correlations, the energy distribution, and a set of sample configurations.
+If the input correlations are generated using the matlab script included in this package (for instructions, see the script itself, which lies in the `scripts/` directory), auxiliary measurements such as higher order correlations can be checked comprehensively. By default, this routine compares the one- and two-point correlations for the model and data, as well as the probability *P(k)* of observing *k* differences between sampled configurations and the "consensus" (determined from input read in to the program). It is also possible to compute the three-point correlations, the energy distribution, and a set of sample configurations.
 
 This routine can be run using, for example:
 
@@ -140,7 +140,7 @@ Note that the output correlations from this program include not just the input o
 
 On difficult data sets (for example, systems of very large size, those with many states, and/or high variability), ACE may be more slow to converge. Below are a few common potential problems and suggestions for how to fix them.
 
-**The one- and two-point error terms have converged (\\(\epsilon\leq 1\\)), but the maximum error remains \\(> 1\\).** Obtaining a normalized maximum error \\(< 1\\) is the most stringent statistical check of the inferred model performed by the ACE and QLS routines. It is possible to obtain a very good generative model of the data even in cases where this error is larger than 1 -- use QGT to verify an acceptable fit.
+**The one- and two-point error terms have converged (\\(\epsilon\leq 1\\)), but the maximum error remains > 1.** Obtaining a normalized maximum error < 1 is the most stringent statistical check of the inferred model performed by the ACE and QLS routines. It is possible to obtain a very good generative model of the data even in cases where this error is larger than 1 -- use QGT to verify an acceptable fit.
 
 **The entropy is oscillating.** Large oscillations of the entropy can be observed when whole collections of variables strongly interact. One common source is strongly-correlated gaps at the beginning and end of sequences from protein families. In such cases, filling in gaps while computing the correlations, using stronger compression, or increasing the regularization strength can help to reduce oscillations and improve convergence.
 
@@ -159,9 +159,10 @@ On difficult data sets (for example, systems of very large size, those with many
 - `-b` tells the program how many samples were used to generate the input correlations, so that the expected error in the correlations due to finite sampling can be estimated (default: 1000)
 - `-mcb` gives the number of Monte Carlo steps used to estimate the inference error (default: 40000 (ace), 800000 (qls, qgt))
 - `-mcr` gives the number of independent Monte Carlo trajectories to use when estimating the inference error (default: 1)
-- `-g2` sets the \\(L_2\\)-norm regularization strength (note that a natural value for this parameter is \\(1/B\\), where \\(B\\) is the number of samples used to generate the input correlations -- for contact prediction, it may be best to use strong regularization \\(\approx 1\\), regardless of the number of samples, default: 0)
-- `-ag` automatically sets the \\(L_2\\)-norm regularization strength equal to \\(1/B\\), using the number of samples \\(B\\) passed with the `-b` option
-- `-gi` enable the alternate gauge-invariant form of the \\(L_2\\) regularization for couplings (see [here][1] for details) 
+- `-g2` sets the L<sub>2</sub>-norm regularization strength (note that a natural value for this parameter is 1/*B*, where *B* is the number of samples used to generate the input correlations -- for contact prediction, it may be best to use strong regularization \\(\approx 1\\), regardless of the number of samples, default: 0)
+- `-gh` sets the **multiplier** for the L<sub>2</sub>-norm regularization strength for fields, so that the **total** regularization strength is the value for `g2` above multiplied by the value for `gh` (default: 0.01)
+- `-ag` automatically sets the L<sub>2</sub>-norm regularization strength equal to 1/*B*, using the number of samples *B* passed with the `-b` option
+- `-gi` enable the alternate gauge-invariant form of the L<sub>2</sub> regularization for couplings (see [here][1] for details)
 
 ### Additional ACE options
 
@@ -171,9 +172,9 @@ On difficult data sets (for example, systems of very large size, those with many
 - `-tmax` specifies the maximum (starting) value of the threshold (default: 1)
 - `-tmin` specifies the minimum allowed value of the threshold; the program terminates automatically after \\(\theta\\) falls below this minimum value (default: 1e-10)
 - `-ts` specifies the logarithmic step size to for between successive values \\(\theta\\), through \\(\theta_{i+1} = \theta_i / \theta_{\rm step}\\) (default: 1.05)
-- `-r` enables the expansion of the entropy \\(S\\) around a mean-field reference entropy \\(S_{0}\\), which may be helpful in particular for inferring models described by dense networks of weak interactions (note: works only if all variables are binary)
-- `-g0` sets the \\(L_0\\)-norm regularization strength, and turns on \\(L_0\\)-norm regularization, enforcing sparsity for Potts couplings (default: 1e-4)
-- `-l0` turns on \\(L_0\\)-norm regularization, but **without** setting the regularization strength
+- `-r` enables the expansion of the entropy *S* around a mean-field reference entropy \\(S_{0}\\), which may be helpful in particular for inferring models described by dense networks of weak interactions (note: works only if all variables are binary)
+- `-g0` sets the L<sub>0</sub>-norm regularization strength, and turns on L<sub>0</sub>-norm regularization, enforcing sparsity for Potts couplings (default: 1e-4)
+- `-l0` turns on L<sub>0</sub>-norm regularization, but **without** setting the regularization strength
 - `-ss` specifies an input "secondary structure" file used to specify the initial set of clusters to consider in the expansion
 - `-lax` enables a laxer cluster construction rule, increasing the number of clusters included in the cluster expansion routine
 
@@ -197,7 +198,7 @@ On difficult data sets (for example, systems of very large size, those with many
 # References
 
 1. [Barton, J. P., De Leonardis, E., Coucke, A. and Cocco, S. (2016). ACE: adaptive cluster expansion for maximum entropy graphical model inference. <i>Bioinformatics</i>, <b>32</b>(20): 3089-3097. DOI: 10.1093/bioinformatics/btw328](https://dx.doi.org/10.1093/bioinformatics/btw328).
- 
+
 2. [Cocco, S. and Monasson, R. (2011). Adaptive Cluster Expansion for Inferring Boltzmann Machines with Noisy Data. <i>Physical Review Letters</i>, <b>106</b>, 090601. DOI: 10.1103/PhysRevLett.106.090601](https://doi.org/10.1103/PhysRevLett.106.090601).
 
 3. [Cocco, S. and Monasson, R. (2012). Adaptive Cluster Expansion for the Inverse Ising Problem: Convergence, Algorithm and Tests.<i> Journal of Statistical Physics</i>, <b>147</b>(2), 252–314. DOI: 10.1007/s10955-012-0463-4](https://doi.org/10.1007/s10955-012-0463-4).
