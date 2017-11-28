@@ -21,7 +21,7 @@ ACE is a software package designed to quickly and accurately infer [Ising](https
 
 Given a set of correlation data or sequence input in [FASTA](http://en.wikipedia.org/wiki/FASTA_format) format, ACE will produce a Ising or Potts model that reproduces the input correlations to within the expected error due to finite sampling.
 
-<b>NOTE:</b> Mathematical expressions are currently not supported on GitHub. To see these expressions rendered properly, please see `README.pdf` or the alternative [project page](http://johnbarton.github.io/projects/ACE/).
+<b>NOTE:</b> Mathematical expressions are currently not supported on GitHub. To see these expressions rendered properly, please see `README.pdf` or the alternative [project page](https://bartonlab.ucr.edu/projects/ACE/).
 
 
 # Installation
