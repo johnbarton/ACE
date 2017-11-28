@@ -4,7 +4,16 @@
 
 # Table of contents
 
-[TOC]
+[Introduction](#introduction)
+[Installation](#installation)
+[Required input](#required-input)
+[Running the program](#running-the-program)
+    [Running ACE](#running-ace)
+    [Running the MC learning algorithm QLS](#running-the-mc-learning-algorithm-qls)
+    [Verifying the output with QGT](#verifying-the-output-with-qgt)
+[Troubleshooting](#troubleshooting)
+[Command line options](#command-line-options)
+[References](#references)
 
 # Introduction
 
@@ -30,7 +39,7 @@ If you'd like to be able to run the program from any directory, you can then ent
 $ make install
 ```
 
-# Required Input
+# Required input
 
 Running the algorithm requires a set of correlations as input, to be computed from your data.
 
@@ -204,6 +213,3 @@ Please contact us for more information or advice on dealing with difficult data 
 3. [Cocco, S. and Monasson, R. (2012). Adaptive Cluster Expansion for the Inverse Ising Problem: Convergence, Algorithm and Tests.<i> Journal of Statistical Physics</i>, <b>147</b>(2), 252–314. DOI: 10.1007/s10955-012-0463-4](https://doi.org/10.1007/s10955-012-0463-4).
 
 4. [Barton, J. and Cocco, S. (2013). Ising models for neural activity inferred via selective cluster expansion: structural and coding properties. <i>Journal of Statistical Mechanics: Theory and Experiment</i>, <b>2013</b>(03), P03002. DOI: 10.1088/1742-5468/2013/03/P03002](https://dx.doi.org/10.1088/1742-5468/2013/03/P03002).
-
-
-> Written with [StackEdit](https://stackedit.io/).
