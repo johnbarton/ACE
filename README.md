@@ -4,16 +4,16 @@
 
 # Table of contents
 
-[Introduction](#introduction)
-[Installation](#installation)
-[Required input](#required-input)
-[Running the program](#running-the-program)
-    [Running ACE](#running-ace)
-    [Running the MC learning algorithm QLS](#running-the-mc-learning-algorithm-qls)
-    [Verifying the output with QGT](#verifying-the-output-with-qgt)
-[Troubleshooting](#troubleshooting)
-[Command line options](#command-line-options)
-[References](#references)
+[Introduction](#introduction)  
+[Installation](#installation)  
+[Required input](#required-input)  
+[Running the program](#running-the-program)  
+    [Running ACE](#running-ace)  
+    [Running the MC learning algorithm QLS](#running-the-mc-learning-algorithm-qls)  
+    [Verifying the output with QGT](#verifying-the-output-with-qgt)  
+[Troubleshooting](#troubleshooting)  
+[Command line options](#command-line-options)  
+[References](#references)  
 
 # Introduction
 
