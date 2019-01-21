@@ -57,7 +57,7 @@ Here *δ* represents the [Kronecker delta function](http://en.wikipedia.org/wiki
 *p*<sub>1,2</sub>(1,1) *p*<sub>1,2</sub>(1,2) ... *p*<sub>1,2</sub>(1,*q*<sub>2</sub>-1) *p*<sub>1,2</sub>(2,1) *p*<sub>1,2</sub>(2,2) ... *p*<sub>1,2</sub>(*q*<sub>1</sub>-1,*q*<sub>2</sub>-1)  
 *p*<sub>1,3</sub>(1,1) ...  
 
-In other words, the first *N* lines of the file record the frequency that each state is observed at each site, and the next *N*(*N*-1)/2 lines record the pairwise correlations. Note that, because \\[\sum_{a=1}^{q_i} p_i(a)=1\,,\\] the frequency (and corresponding pair correlations) for one state at each site need not be specified explicitly.
+In other words, the first *N* lines of the file record the frequency that each state is observed at each site, and the next *N*(*N*-1)/2 lines record the pairwise correlations. Note that, because \\[\sum_{a=1}^{q_i} p_i(a)=1\,,\\] the frequency (and corresponding pair correlations) for one state at each site should **not** be specified explicitly. If you would like to obtain nonzero fields and couplings for these "gauged" states, you can perform a *gauge transformation* on the parameters after they've been inferred (for more information on gauge transformations, see the Supplemental Information of [reference 1](https://dx.doi.org/10.1093/bioinformatics/btw328)).
 
 These values should be given in floating point or scientific format, with whitespace (e.g. `'\t'`) between successive values and a newline character (`'\n'`) at the end of each line. In order for the correlations to be read in properly, there should be **no** whitespace between the final correlation value and the newline character on each line.
 
