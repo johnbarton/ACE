@@ -782,7 +782,7 @@ def printCMSA(msa, smap, out=''):
         for j in range(len(msa)):
             if (msa[j][i] in AA):
                 id = smap[i][msa[j][i]]
-                if id>0: aaid[i][id-1].append(j)
+                if id>0: aaid[i][id-1].append(j+1)
 
     # Write out cmsa
 
@@ -810,7 +810,7 @@ def printCMSAbin(msa, out=''):
     for i in range(N):
         for j in range(len(msa)):
             id = int(msa[j][i])
-            if id>0: aaid[i][id-1].append(j)
+            if id>0: aaid[i][id-1].append(j+1)
 
     # Write out cmsa
 
@@ -999,7 +999,6 @@ def getE(h, J, smap, seq, passframeshift=False, passGaps=False, passX=False):
     # Compute energy
 
     E = 0.0
-
     for i in range(len(nz)):
         E -= h[nz[i]][pconfig[nz[i]]-1]
         for j in range(i+1,len(nz)):
