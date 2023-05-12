@@ -1,4 +1,4 @@
-%[![Build Status](https://img.shields.io/travis/johnbarton/ACE.svg?style=flat-square)](https://travis-ci.org/johnbarton/ACE) 
+<!-- [![Build Status](https://img.shields.io/travis/johnbarton/ACE.svg?style=flat-square)](https://travis-ci.org/johnbarton/ACE) -->
 [![DOI](https://img.shields.io/badge/DOI-10.1093%2Fbioinformatics%2Fbtw328-blue.svg?style=flat-square)](https://doi.org/10.1093/bioinformatics/btw328)
 
 # ACE
